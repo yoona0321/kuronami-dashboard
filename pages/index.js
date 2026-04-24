@@ -1,9 +1,7 @@
 import Link from "next/link";
-import { useRouter } from "next/router";
 import { useState } from "react";
 
 export default function Home() {
-  const router = useRouter();
   const [openMenu, setOpenMenu] = useState(null);
 
   const cardStyle = {
@@ -44,6 +42,12 @@ export default function Home() {
     color: "#333"
   };
 
+  const arrowStyle = {
+    fontSize: "10px",
+    marginLeft: "4px",
+    opacity: 0.5
+  };
+
   return (
     <div style={{
       background: "#f3f4f6",
@@ -72,7 +76,7 @@ export default function Home() {
         {/* 👥 소환사 관리 */}
         <div style={{ position: "relative" }}>
           <div onClick={() => setOpenMenu(openMenu === "member" ? null : "member")} style={{ cursor: "pointer" }}>
-            👥 소환사 관리 ▼
+            👥 소환사 관리 <span style={arrowStyle}>▾</span>
           </div>
 
           {openMenu === "member" && (
@@ -86,7 +90,7 @@ export default function Home() {
         {/* 📢 모집/참여 */}
         <div style={{ position: "relative" }}>
           <div onClick={() => setOpenMenu(openMenu === "apply" ? null : "apply")} style={{ cursor: "pointer" }}>
-            📢 모집/참여 ▼
+            📢 모집/참여 <span style={arrowStyle}>▾</span>
           </div>
 
           {openMenu === "apply" && (
@@ -99,7 +103,7 @@ export default function Home() {
         {/* 🏆 기록실 */}
         <div style={{ position: "relative" }}>
           <div onClick={() => setOpenMenu(openMenu === "record" ? null : "record")} style={{ cursor: "pointer" }}>
-            🏆 기록실 ▼
+            🏆 기록실 <span style={arrowStyle}>▾</span>
           </div>
 
           {openMenu === "record" && (
@@ -112,10 +116,14 @@ export default function Home() {
         </div>
 
         {/* 🎯 랭킹 */}
-        <Link href="/ranking">🎯 랭킹</Link>
+        <Link href="/ranking" style={{ textDecoration: "none", color: "#333" }}>
+          🎯 랭킹
+        </Link>
 
         {/* 💰 장부 */}
-        <Link href="/finance">💰 장부</Link>
+        <Link href="/finance" style={{ textDecoration: "none", color: "#333" }}>
+          💰 장부
+        </Link>
 
       </div>
 
