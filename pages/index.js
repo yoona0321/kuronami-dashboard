@@ -4,7 +4,7 @@ import { useState } from "react";
 export default function Home() {
   const [openMenu, setOpenMenu] = useState(null);
 
-  // 🎯 카드 스타일
+  // 카드 스타일
   const cardStyle = {
     background: "linear-gradient(135deg, #ffffff, #f9fafb)",
     padding: "25px",
@@ -24,7 +24,7 @@ export default function Home() {
     e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.06)";
   };
 
-  // 🎯 드롭다운 스타일
+  // 드롭다운 스타일
   const dropdownStyle = {
     position: "absolute",
     top: "42px",
@@ -45,13 +45,33 @@ export default function Home() {
     borderRadius: "8px"
   };
 
-  // 🎯 화살표 스타일 (딱 좋은 값)
+  // 화살표
   const arrowStyle = {
-    fontSize: "13px",
+    fontSize: "15px",
     marginLeft: "6px",
-    opacity: 0.6,
+    opacity: 0.7,
     position: "relative",
     top: "1px"
+  };
+
+  // 메뉴 스타일
+  const menuTextStyle = {
+    cursor: "pointer",
+    fontSize: "15px",
+    position: "relative",
+    paddingBottom: "4px",
+    transition: "color 0.2s ease"
+  };
+
+  // hover 효과 함수
+  const menuHover = (e) => {
+    e.currentTarget.style.color = "#6366f1";
+    e.currentTarget.querySelector(".underline").style.width = "100%";
+  };
+
+  const menuLeave = (e) => {
+    e.currentTarget.style.color = "#333";
+    e.currentTarget.querySelector(".underline").style.width = "0%";
   };
 
   return (
@@ -83,9 +103,12 @@ export default function Home() {
         <div style={{ position: "relative" }}>
           <div
             onClick={() => setOpenMenu(openMenu === "member" ? null : "member")}
-            style={{ cursor: "pointer" }}
+            onMouseEnter={menuHover}
+            onMouseLeave={menuLeave}
+            style={menuTextStyle}
           >
             👥 소환사 관리 <span style={arrowStyle}>▾</span>
+            <div className="underline" style={underlineStyle} />
           </div>
 
           {openMenu === "member" && (
@@ -100,9 +123,12 @@ export default function Home() {
         <div style={{ position: "relative" }}>
           <div
             onClick={() => setOpenMenu(openMenu === "apply" ? null : "apply")}
-            style={{ cursor: "pointer" }}
+            onMouseEnter={menuHover}
+            onMouseLeave={menuLeave}
+            style={menuTextStyle}
           >
             📢 모집/참여 <span style={arrowStyle}>▾</span>
+            <div className="underline" style={underlineStyle} />
           </div>
 
           {openMenu === "apply" && (
@@ -116,9 +142,12 @@ export default function Home() {
         <div style={{ position: "relative" }}>
           <div
             onClick={() => setOpenMenu(openMenu === "record" ? null : "record")}
-            style={{ cursor: "pointer" }}
+            onMouseEnter={menuHover}
+            onMouseLeave={menuLeave}
+            style={menuTextStyle}
           >
             🏆 기록실 <span style={arrowStyle}>▾</span>
+            <div className="underline" style={underlineStyle} />
           </div>
 
           {openMenu === "record" && (
@@ -131,13 +160,21 @@ export default function Home() {
         </div>
 
         {/* 🎯 랭킹 */}
-        <Link href="/ranking" style={{ textDecoration: "none", color: "#333" }}>
+        <Link href="/ranking" style={{ ...menuTextStyle, textDecoration: "none" }}
+          onMouseEnter={menuHover}
+          onMouseLeave={menuLeave}
+        >
           🎯 랭킹
+          <div className="underline" style={underlineStyle} />
         </Link>
 
         {/* 💰 장부 */}
-        <Link href="/finance" style={{ textDecoration: "none", color: "#333" }}>
+        <Link href="/finance" style={{ ...menuTextStyle, textDecoration: "none" }}
+          onMouseEnter={menuHover}
+          onMouseLeave={menuLeave}
+        >
           💰 장부
+          <div className="underline" style={underlineStyle} />
         </Link>
 
       </div>
@@ -148,40 +185,19 @@ export default function Home() {
 
         <div style={{ display: "flex", gap: "20px" }}>
 
-          {/* TOP3 */}
-          <div
-            style={{ ...cardStyle, flex: 1 }}
-            onMouseEnter={handleHover}
-            onMouseLeave={handleLeave}
-          >
+          <div style={{ ...cardStyle, flex: 1 }} onMouseEnter={handleHover} onMouseLeave={handleLeave}>
             <h2>🔥 이번 주 TOP 3</h2>
             <p style={{ color: "#888" }}>아직 데이터가 없습니다.</p>
           </div>
 
-          {/* MVP */}
-          <div
-            style={{ ...cardStyle, flex: 2 }}
-            onMouseEnter={handleHover}
-            onMouseLeave={handleLeave}
-          >
+          <div style={{ ...cardStyle, flex: 2 }} onMouseEnter={handleHover} onMouseLeave={handleLeave}>
             <h2>🏆 이번 주 MVP</h2>
-            <div style={{
-              background: "#eef2ff",
-              padding: "20px",
-              borderRadius: "12px"
-            }}>
-              <p style={{ color: "#555" }}>
-                아직 MVP가 선정되지 않았습니다.
-              </p>
+            <div style={{ background: "#eef2ff", padding: "20px", borderRadius: "12px" }}>
+              <p style={{ color: "#555" }}>아직 MVP가 선정되지 않았습니다.</p>
             </div>
           </div>
 
-          {/* 최근 내전 */}
-          <div
-            style={{ ...cardStyle, flex: 1 }}
-            onMouseEnter={handleHover}
-            onMouseLeave={handleLeave}
-          >
+          <div style={{ ...cardStyle, flex: 1 }} onMouseEnter={handleHover} onMouseLeave={handleLeave}>
             <h2>📜 최근 내전</h2>
             <p style={{ color: "#888" }}>기록이 없습니다.</p>
           </div>
@@ -192,3 +208,14 @@ export default function Home() {
     </div>
   );
 }
+
+// 🔥 밑줄 스타일 (여기 맨 아래!)
+const underlineStyle = {
+  position: "absolute",
+  bottom: 0,
+  left: 0,
+  height: "2px",
+  width: "0%",
+  background: "#6366f1",
+  transition: "width 0.3s ease"
+};
