@@ -1,13 +1,8 @@
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { useState } from "react";
 
 export default function Home() {
   const router = useRouter();
-
-  const [name, setName] = useState("");
-  const [kills, setKills] = useState("");
-  const [top3, setTop3] = useState([]);
 
   const menuStyle = (path) => ({
     color: router.pathname === path ? "#4f46e5" : "#333",
@@ -16,18 +11,6 @@ export default function Home() {
     padding: "6px 10px",
     borderRadius: "8px",
   });
-
-  const addPlayer = () => {
-    if (!name || !kills) return;
-
-    const newData = [...top3, { name, kills: Number(kills) }]
-      .sort((a, b) => b.kills - a.kills)
-      .slice(0, 3);
-
-    setTop3(newData);
-    setName("");
-    setKills("");
-  };
 
   return (
     <div style={{
@@ -61,40 +44,10 @@ export default function Home() {
 
         <div style={{ display: "flex", gap: "20px" }}>
 
-          {/* 🔥 TOP3 */}
+          {/* TOP3 */}
           <div style={{ flex: 1 }}>
             <h2>🔥 이번 주 TOP 3</h2>
-
-            {/* 입력창 */}
-            <div style={{ marginBottom: "10px" }}>
-              <input
-                placeholder="닉네임"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                style={{ marginRight: "5px" }}
-              />
-              <input
-                placeholder="킬"
-                type="number"
-                value={kills}
-                onChange={(e) => setKills(e.target.value)}
-                style={{ marginRight: "5px", width: "60px" }}
-              />
-              <button onClick={addPlayer}>추가</button>
-            </div>
-
-            {/* 리스트 */}
-            {top3.length === 0 ? (
-              <p style={{ color: "#777" }}>아직 데이터가 없습니다.</p>
-            ) : (
-              <ul>
-                {top3.map((p, i) => (
-                  <li key={i}>
-                    {i + 1}위 {p.name} - {p.kills}킬
-                  </li>
-                ))}
-              </ul>
-            )}
+            <p style={{ color: "#777" }}>아직 데이터가 없습니다.</p>
           </div>
 
           {/* MVP */}
