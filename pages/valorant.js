@@ -6,7 +6,9 @@ export default function Valorant() {
   const [users, setUsers] = useState([]);
   const [name, setName] = useState("");
   const [tier, setTier] = useState("");
-  const [role, setRole] = useState("");
+  const [mainRoles, setMainRoles] = useState([]);
+  const [subRoles, setSubRoles] = useState([]);
+  const [open, setOpen] = useState(false);
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("high");
 
@@ -21,20 +23,13 @@ export default function Valorant() {
     setUsers(data.docs.map(d => ({ id:d.id, ...d.data() })));
   };
 
-  /* ✅ 발로란트 한글 티어 순서 */
+  /* 티어 */
   const tierRank = [
-    "아이언",
-    "브론즈",
-    "실버",
-    "골드",
-    "플레티넘",
-    "다이아몬드",
-    "초월자",
-    "불멸",
-    "레디언트"
+    "아이언","브론즈","실버","골드",
+    "플레티넘","다이아몬드","초월자",
+    "불멸","레디언트"
   ];
 
-  /* ✅ 정렬 점수 */
   const getScore = (tier) => {
     if (!tier) return 0;
 
@@ -45,7 +40,6 @@ export default function Valorant() {
     const tierIndex = tierRank.indexOf(base);
     let score = tierIndex * 100;
 
-    // 레디언트는 숫자 없음
     if (base !== "레디언트" && num) {
       const n = parseInt(num);
       if (n >= 1 && n <= 3) {
@@ -56,10 +50,8 @@ export default function Valorant() {
     return score;
   };
 
-  /* ✅ 색상 */
   const getColor = (tier) => {
     const base = tier?.split(" ")[0];
-
     const map = {
       레디언트:"#facc15",
       불멸:"#ef4444",
@@ -71,17 +63,32 @@ export default function Valorant() {
       브론즈:"#92400e",
       아이언:"#6b7280",
     };
-
     return map[base] || "#999";
   };
 
+  /* 역할 토글 */
+  const toggleMain = (r) => {
+    setMainRoles(prev =>
+      prev.includes(r) ? prev.filter(x=>x!==r) : [...prev, r]
+    );
+    setSubRoles(prev => prev.filter(x=>x!==r));
+  };
+
+  const toggleSub = (r) => {
+    setSubRoles(prev =>
+      prev.includes(r) ? prev.filter(x=>x!==r) : [...prev, r]
+    );
+    setMainRoles(prev => prev.filter(x=>x!==r));
+  };
+
   const addUser = async () => {
-    if (!name || !tier || !role) return;
+    if (!name || !tier || mainRoles.length === 0) return;
 
     const newUser = {
       name,
-      tier: tier, // ✅ 대문자 제거 (한글 유지)
-      role
+      tier,
+      mainRoles,
+      subRoles
     };
 
     const docRef = await addDoc(collection(db, "valorantUsers"), newUser);
@@ -89,7 +96,8 @@ export default function Valorant() {
 
     setName("");
     setTier("");
-    setRole("");
+    setMainRoles([]);
+    setSubRoles([]);
   };
 
   const removeUser = async (id) => {
@@ -115,44 +123,44 @@ export default function Valorant() {
       {/* 등록 */}
       <div style={box}>
         <div style={row}>
-          <input
-            placeholder="닉네임"
-            value={name}
-            onChange={e=>setName(e.target.value)}
-            style={input}
-          />
+          <input placeholder="닉네임" value={name} onChange={e=>setName(e.target.value)} style={input}/>
+          <input placeholder="티어 (예: 골드 2)" value={tier} onChange={e=>setTier(e.target.value)} style={input}/>
 
-          <input
-            placeholder="티어 (예: 골드 2 / 레디언트)"
-            value={tier}
-            onChange={e=>setTier(e.target.value)}
-            style={input}
-          />
+          {/* 역할 드롭다운 */}
+          <div style={{position:"relative"}}>
+            <div style={dropdownBtn} onClick={()=>setOpen(!open)}>
+              역할 선택 ▼
+            </div>
 
-          <select value={role} onChange={e=>setRole(e.target.value)} style={input}>
-            <option value="">역할 선택</option>
-            {roles.map(r => <option key={r}>{r}</option>)}
-          </select>
+            {open && (
+              <div style={dropdown}>
+                <b>주라인</b>
+                {roles.map(r=>(
+                  <label key={r}>
+                    <input type="checkbox"
+                      checked={mainRoles.includes(r)}
+                      onChange={()=>toggleMain(r)}
+                    /> {r}
+                  </label>
+                ))}
 
-          <button style={addBtn} onClick={addUser}>
-            추가
-          </button>
+                <hr/>
+
+                <b>부라인</b>
+                {roles.map(r=>(
+                  <label key={r}>
+                    <input type="checkbox"
+                      checked={subRoles.includes(r)}
+                      onChange={()=>toggleSub(r)}
+                    /> {r}
+                  </label>
+                ))}
+              </div>
+            )}
+          </div>
+
+          <button style={addBtn} onClick={addUser}>추가</button>
         </div>
-      </div>
-
-      {/* 검색 */}
-      <div style={box}>
-        <input
-          placeholder="검색"
-          value={search}
-          onChange={e=>setSearch(e.target.value)}
-          style={input}
-        />
-
-        <select value={sort} onChange={e=>setSort(e.target.value)} style={input}>
-          <option value="high">티어 높은순</option>
-          <option value="low">티어 낮은순</option>
-        </select>
       </div>
 
       {/* 카드 */}
@@ -166,7 +174,8 @@ export default function Valorant() {
             </span>
 
             <div style={roleBox}>
-              {user.role}
+              <div>주라인: {user.mainRoles.join(", ")}</div>
+              <div>부라인: {user.subRoles.join(", ")}</div>
             </div>
 
             <button style={delBtn} onClick={()=>removeUser(user.id)}>
@@ -179,74 +188,24 @@ export default function Valorant() {
   );
 }
 
-/* 스타일 */
+/* 스타일 추가 */
 
-const wrap = { padding:30, background:"#f3f4f6" };
-
-const box = {
-  background:"white",
-  padding:20,
-  borderRadius:14,
-  marginBottom:20
-};
-
-const row = {
-  display:"flex",
-  gap:10,
-  flexWrap:"wrap"
-};
-
-const input = {
-  padding:8,
+const dropdownBtn = {
+  padding:"8px",
   border:"1px solid #ddd",
-  borderRadius:6
-};
-
-const addBtn = {
-  padding:"10px 16px",
-  background:"#6366f1",
-  color:"white",
-  border:"none",
-  borderRadius:10,
+  borderRadius:6,
   cursor:"pointer"
 };
 
-const grid = {
-  display:"grid",
-  gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))",
-  gap:16
-};
-
-const card = {
+const dropdown = {
+  position:"absolute",
+  top:40,
   background:"white",
-  padding:20,
-  borderRadius:20,
-  boxShadow:"0 10px 25px rgba(0,0,0,0.08)"
-};
-
-const tierTag = {
-  color:"white",
-  padding:"6px 14px",
-  borderRadius:"999px",
-  fontSize:12,
-  marginTop:5,
-  display:"inline-block"
-};
-
-const roleBox = {
-  marginTop:10,
-  background:"#eef2f7",
   padding:10,
-  borderRadius:10,
-  textAlign:"center"
-};
-
-const delBtn = {
-  marginTop:10,
-  background:"#ef4444",
-  color:"white",
-  padding:10,
-  border:"none",
-  borderRadius:10,
-  cursor:"pointer"
+  border:"1px solid #ddd",
+  borderRadius:8,
+  zIndex:999,
+  display:"flex",
+  flexDirection:"column",
+  gap:5
 };
