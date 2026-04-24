@@ -92,7 +92,7 @@ export default function Navbar() {
         </div>
       </Link>
 
-      {/* 👥 소환사 관리 */}
+      {/* 👥 멤버 관리 */}
       <div style={{ position: "relative" }}>
         <div
           onClick={(e) => toggleMenu(e, "member")}
@@ -100,7 +100,7 @@ export default function Navbar() {
           onMouseEnter={handleMenuHover}
           onMouseLeave={handleMenuLeave}
         >
-          👥 소환사 관리 <span style={arrowStyle}>▾</span>
+          👥 멤버 관리 <span style={arrowStyle}>▾</span>
           <div className="underline" style={underlineStyle}></div>
         </div>
 
