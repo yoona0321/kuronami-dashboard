@@ -11,13 +11,26 @@ export default function Lol() {
 
   const lineList = ["ALL", "TOP", "JUNGLE", "MID", "ADC", "SUP"];
 
+  // ✅ 처음 로딩할 때만 불러오기 (핵심)
   useEffect(() => {
-    const saved = localStorage.getItem("lolUsers");
-    if (saved) setUsers(JSON.parse(saved));
+    try {
+      const saved = localStorage.getItem("lolUsers");
+      if (saved) {
+        setUsers(JSON.parse(saved));
+      }
+    } catch (e) {
+      console.error("불러오기 실패", e);
+      setUsers([]);
+    }
   }, []);
 
+  // ✅ users 바뀔 때마다 저장
   useEffect(() => {
-    localStorage.setItem("lolUsers", JSON.stringify(users));
+    try {
+      localStorage.setItem("lolUsers", JSON.stringify(users));
+    } catch (e) {
+      console.error("저장 실패", e);
+    }
   }, [users]);
 
   const getTierColor = (tier) => {
@@ -74,15 +87,14 @@ export default function Lol() {
   const addUser = () => {
     if (!name || !tier || mainLines.length === 0) return;
 
-    setUsers([
-      ...users,
-      {
-        name,
-        tier: tier.toUpperCase(),
-        mainLines,
-        subLines
-      }
-    ]);
+    const newUser = {
+      name,
+      tier: tier.toUpperCase(),
+      mainLines,
+      subLines
+    };
+
+    setUsers(prev => [...prev, newUser]); // 🔥 안전한 방식
 
     setName("");
     setTier("");
@@ -95,16 +107,9 @@ export default function Lol() {
   };
 
   return (
-    <div style={{
-      padding: "30px",
-      background: "#f3f4f6",
-      minHeight: "100vh"
-    }}>
+    <div style={{ padding: "30px", background: "#f3f4f6", minHeight: "100vh" }}>
 
       <h1>👥 리그오브레전드 인원 리스트</h1>
-      <p style={{ color: "#666", marginBottom: "25px" }}>
-        주라인 / 부라인을 선택해 등록할 수 있습니다.
-      </p>
 
       <div style={boxStyle}>
         <input
@@ -128,7 +133,6 @@ export default function Lol() {
 
           {open && (
             <div style={dropdownBox}>
-
               <div style={{ fontWeight: "bold" }}>⭐ 주라인</div>
               {lineList.map((l) => (
                 <label key={l} style={checkboxItem}>
@@ -154,7 +158,6 @@ export default function Lol() {
                   {l}
                 </label>
               ))}
-
             </div>
           )}
         </div>
@@ -168,62 +171,30 @@ export default function Lol() {
       <div style={gridStyle}>
         {users.map((user, i) => (
           <div key={i} style={cardStyle}>
+            <h3>{user.name}</h3>
 
-            <h3 style={{ margin: 0 }}>{user.name}</h3>
+            <span style={{
+              background: getTierColor(user.tier),
+              color: "white",
+              padding: "6px 12px",
+              borderRadius: "999px",
+              fontSize: "12px"
+            }}>
+              {formatTier(user.tier)}
+            </span>
 
-            {/* 티어만 표시 (라인 제거됨) */}
-            <div style={{ marginTop: "6px" }}>
-              <span style={{
-                background: getTierColor(user.tier),
-                color: "white",
-                padding: "6px 12px",
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: "bold"
-              }}>
-                {formatTier(user.tier)}
-              </span>
-            </div>
-
-            {/* 라인 박스 */}
             <div style={lineBox}>
-
-              <div style={rowStyle}>
-                <span style={labelStyle}>주라인</span>
-                <div style={tagWrap}>
-                  {user.mainLines.map((l, idx) => (
-                    <span key={idx} style={mainTag}>{l}</span>
-                  ))}
-                </div>
+              <div>
+                <b>주라인:</b> {user.mainLines.join(", ")}
               </div>
-
-              <div style={rowStyle}>
-                <span style={labelStyle}>부라인</span>
-                <div style={tagWrap}>
-                  {user.subLines.map((l, idx) => (
-                    <span key={idx} style={subTag}>{l}</span>
-                  ))}
-                </div>
+              <div>
+                <b>부라인:</b> {user.subLines.join(", ")}
               </div>
-
             </div>
 
-            {/* 🔥 삭제 버튼 (hover 효과 추가) */}
-            <button
-              onClick={() => removeUser(i)}
-              style={deleteBtn}
-              onMouseEnter={(e) => {
-                e.target.style.background = "#dc2626";
-                e.target.style.transform = "scale(1.05)";
-              }}
-              onMouseLeave={(e) => {
-                e.target.style.background = "#ef4444";
-                e.target.style.transform = "scale(1)";
-              }}
-            >
+            <button onClick={() => removeUser(i)} style={deleteBtn}>
               삭제
             </button>
-
           </div>
         ))}
       </div>
@@ -259,39 +230,29 @@ const dropdownButton = {
 const dropdownBox = {
   position: "absolute",
   top: "40px",
-  left: 0,
   background: "white",
   border: "1px solid #ddd",
-  borderRadius: "8px",
-  padding: "10px",
-  boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
-  zIndex: 10
+  padding: "10px"
 };
 
 const checkboxItem = {
-  display: "block",
-  marginBottom: "5px"
+  display: "block"
 };
 
 const buttonStyle = {
   marginTop: "10px",
-  padding: "8px 14px",
+  padding: "8px",
   background: "#6366f1",
   color: "white",
-  border: "none",
-  borderRadius: "6px",
-  cursor: "pointer"
+  border: "none"
 };
 
 const deleteBtn = {
   marginTop: "10px",
-  padding: "8px",
   background: "#ef4444",
   color: "white",
-  border: "none",
-  borderRadius: "8px",
-  cursor: "pointer",
-  transition: "all 0.2s ease"
+  padding: "6px",
+  border: "none"
 };
 
 const gridStyle = {
@@ -303,49 +264,12 @@ const gridStyle = {
 const cardStyle = {
   background: "white",
   padding: "20px",
-  borderRadius: "18px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-  display: "flex",
-  flexDirection: "column",
-  gap: "10px"
+  borderRadius: "12px"
 };
 
 const lineBox = {
+  marginTop: "10px",
   background: "#f1f5f9",
-  borderRadius: "12px",
-  padding: "12px"
-};
-
-const rowStyle = {
-  display: "flex",
-  justifyContent: "space-between",
-  marginBottom: "6px"
-};
-
-const labelStyle = {
-  fontSize: "12px",
-  color: "#666",
-  width: "60px"
-};
-
-const tagWrap = {
-  display: "flex",
-  gap: "6px",
-  flexWrap: "wrap",
-  justifyContent: "flex-end"
-};
-
-const mainTag = {
-  background: "#6366f1",
-  color: "white",
-  padding: "4px 10px",
-  borderRadius: "999px",
-  fontSize: "12px"
-};
-
-const subTag = {
-  background: "#e5e7eb",
-  padding: "4px 10px",
-  borderRadius: "999px",
-  fontSize: "12px"
+  padding: "10px",
+  borderRadius: "8px"
 };
