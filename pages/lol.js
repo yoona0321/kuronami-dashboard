@@ -28,6 +28,7 @@ export default function Lol() {
 
   // 🎨 티어 색상
   const getTierColor = (tier) => {
+    if (!tier) return "#6b7280";
     const base = tier.toUpperCase().split(" ")[0];
 
     switch (base) {
@@ -46,6 +47,8 @@ export default function Lol() {
   };
 
   const formatTier = (tier) => {
+    if (!tier) return "UNRANKED";
+
     const parts = tier.toUpperCase().split(" ");
     const base = parts[0];
     const value = parts[1];
@@ -80,7 +83,10 @@ export default function Lol() {
 
   // ➕ 추가
   const addUser = async () => {
-    if (!name || !tier || mainLines.length === 0) return;
+    if (!name || !tier || mainLines.length === 0) {
+      alert("닉네임 / 티어 / 주라인 최소 1개 입력해라");
+      return;
+    }
 
     const newUser = {
       name,
@@ -185,10 +191,9 @@ export default function Lol() {
               {formatTier(user.tier)}
             </span>
 
-            {/* 🔥 여기 핵심 (2번째 이미지 스타일) */}
+            {/* 🔥 태그형 UI (중요) */}
             <div style={lineBox}>
 
-              {/* 주라인 */}
               <div style={rowStyle}>
                 <span style={labelStyle}>주라인</span>
                 <div style={tagWrap}>
@@ -198,7 +203,6 @@ export default function Lol() {
                 </div>
               </div>
 
-              {/* 부라인 */}
               <div style={rowStyle}>
                 <span style={labelStyle}>부라인</span>
                 <div style={tagWrap}>
