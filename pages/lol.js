@@ -106,7 +106,6 @@ export default function Lol() {
         주라인 / 부라인을 선택해 등록할 수 있습니다.
       </p>
 
-      {/* 입력 */}
       <div style={boxStyle}>
         <input
           placeholder="닉네임"
@@ -122,7 +121,6 @@ export default function Lol() {
           style={inputStyle}
         />
 
-        {/* 드롭다운 */}
         <div style={{ position: "relative", marginTop: "10px" }}>
           <div onClick={() => setOpen(!open)} style={dropdownButton}>
             라인 선택 ▼
@@ -171,13 +169,10 @@ export default function Lol() {
         {users.map((user, i) => (
           <div key={i} style={cardStyle}>
 
-            {/* 상단 */}
-            <div style={topRow}>
-              <h3 style={{ margin: 0 }}>{user.name}</h3>
-            </div>
+            <h3 style={{ margin: 0 }}>{user.name}</h3>
 
-            {/* 티어 + 대표라인 */}
-            <div style={tierRow}>
+            {/* 티어만 표시 (라인 제거됨) */}
+            <div style={{ marginTop: "6px" }}>
               <span style={{
                 background: getTierColor(user.tier),
                 color: "white",
@@ -188,15 +183,9 @@ export default function Lol() {
               }}>
                 {formatTier(user.tier)}
               </span>
-
-              {user.mainLines[0] && (
-                <span style={mainBadge}>
-                  {user.mainLines[0]}
-                </span>
-              )}
             </div>
 
-            {/* 📦 라인 박스 */}
+            {/* 라인 박스 */}
             <div style={lineBox}>
 
               <div style={rowStyle}>
@@ -219,7 +208,19 @@ export default function Lol() {
 
             </div>
 
-            <button onClick={() => removeUser(i)} style={deleteBtn}>
+            {/* 🔥 삭제 버튼 (hover 효과 추가) */}
+            <button
+              onClick={() => removeUser(i)}
+              style={deleteBtn}
+              onMouseEnter={(e) => {
+                e.target.style.background = "#dc2626";
+                e.target.style.transform = "scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "#ef4444";
+                e.target.style.transform = "scale(1)";
+              }}
+            >
               삭제
             </button>
 
@@ -284,11 +285,13 @@ const buttonStyle = {
 
 const deleteBtn = {
   marginTop: "10px",
-  padding: "6px 12px",
+  padding: "8px",
   background: "#ef4444",
   color: "white",
   border: "none",
-  borderRadius: "8px"
+  borderRadius: "8px",
+  cursor: "pointer",
+  transition: "all 0.2s ease"
 };
 
 const gridStyle = {
@@ -307,26 +310,6 @@ const cardStyle = {
   gap: "10px"
 };
 
-const topRow = {
-  display: "flex",
-  justifyContent: "space-between",
-  alignItems: "center"
-};
-
-const tierRow = {
-  display: "flex",
-  gap: "8px",
-  flexWrap: "wrap"
-};
-
-const mainBadge = {
-  background: "#6366f1",
-  color: "white",
-  padding: "6px 10px",
-  borderRadius: "999px",
-  fontSize: "12px"
-};
-
 const lineBox = {
   background: "#f1f5f9",
   borderRadius: "12px",
@@ -336,7 +319,6 @@ const lineBox = {
 const rowStyle = {
   display: "flex",
   justifyContent: "space-between",
-  alignItems: "center",
   marginBottom: "6px"
 };
 
