@@ -5,8 +5,8 @@ export default function Lol() {
   const [name, setName] = useState("");
   const [tier, setTier] = useState("");
 
-  const [mainLines, setMainLines] = useState([]); // ⭐ 여러개
-  const [subLines, setSubLines] = useState([]);   // 🔹 여러개
+  const [mainLines, setMainLines] = useState([]);
+  const [subLines, setSubLines] = useState([]);
   const [open, setOpen] = useState(false);
 
   const lineList = ["ALL", "TOP", "JUNGLE", "MID", "ADC", "SUP"];
@@ -20,6 +20,7 @@ export default function Lol() {
     localStorage.setItem("lolUsers", JSON.stringify(users));
   }, [users]);
 
+  // 🎨 티어 색상
   const getTierColor = (tier) => {
     const base = tier.toUpperCase().split(" ")[0];
 
@@ -38,6 +39,7 @@ export default function Lol() {
     }
   };
 
+  // 🎯 티어 출력
   const formatTier = (tier) => {
     const parts = tier.toUpperCase().split(" ");
     const base = parts[0];
@@ -53,23 +55,23 @@ export default function Lol() {
     return base;
   };
 
-  // ⭐ 주라인 토글
+  // ⭐ 주라인
   const toggleMain = (line) => {
     if (mainLines.includes(line)) {
       setMainLines(mainLines.filter(l => l !== line));
     } else {
       setMainLines([...mainLines, line]);
-      setSubLines(subLines.filter(l => l !== line)); // 겹치지 않게
+      setSubLines(subLines.filter(l => l !== line));
     }
   };
 
-  // 🔹 부라인 토글
+  // 🔹 부라인
   const toggleSub = (line) => {
     if (subLines.includes(line)) {
       setSubLines(subLines.filter(l => l !== line));
     } else {
       setSubLines([...subLines, line]);
-      setMainLines(mainLines.filter(l => l !== line)); // 겹치지 않게
+      setMainLines(mainLines.filter(l => l !== line));
     }
   };
 
@@ -97,9 +99,16 @@ export default function Lol() {
   };
 
   return (
-    <div style={{ padding: "30px", background: "#f3f4f6", minHeight: "100vh" }}>
+    <div style={{
+      padding: "30px",
+      background: "#f3f4f6",
+      minHeight: "100vh"
+    }}>
 
       <h1>👥 리그오브레전드 인원 리스트</h1>
+      <p style={{ color: "#666", marginBottom: "25px" }}>
+        주라인과 부라인을 선택할 수 있습니다.
+      </p>
 
       {/* 입력 */}
       <div style={boxStyle}>
@@ -179,10 +188,15 @@ export default function Lol() {
               {formatTier(user.tier)}
             </span>
 
-            {/* ⭐ 주라인 */}
-            <div style={{ marginTop: "10px" }}>
+            {/* ⭐ + 🔹 한 줄 정렬 */}
+            <div style={{
+              marginTop: "10px",
+              display: "flex",
+              flexWrap: "wrap",
+              gap: "6px"
+            }}>
               {user.mainLines.map((l, idx) => (
-                <span key={idx} style={{
+                <span key={"m"+idx} style={{
                   ...lineTag,
                   background: "#6366f1",
                   color: "white"
@@ -190,12 +204,9 @@ export default function Lol() {
                   {l}
                 </span>
               ))}
-            </div>
 
-            {/* 🔹 부라인 */}
-            <div style={{ marginTop: "5px" }}>
               {user.subLines.map((l, idx) => (
-                <span key={idx} style={lineTag}>
+                <span key={"s"+idx} style={lineTag}>
                   {l}
                 </span>
               ))}
@@ -283,13 +294,15 @@ const cardStyle = {
   background: "white",
   padding: "20px",
   borderRadius: "18px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)"
+  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+  display: "flex",
+  flexDirection: "column",
+  gap: "8px"
 };
 
 const lineTag = {
   background: "#e5e7eb",
   padding: "4px 10px",
   borderRadius: "999px",
-  fontSize: "12px",
-  marginRight: "5px"
+  fontSize: "12px"
 };
