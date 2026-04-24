@@ -1,12 +1,6 @@
 import { useState, useEffect } from "react";
 import { db } from "../firebase";
-import {
-  collection,
-  addDoc,
-  getDocs,
-  deleteDoc,
-  doc,
-} from "firebase/firestore";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 
 export default function Lol() {
   const [users, setUsers] = useState([]);
@@ -18,45 +12,69 @@ export default function Lol() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("high");
 
-  const lineList = ["ALL", "TOP", "JUNGLE", "MID", "ADC", "SUP"];
+  const lines = ["ALL","TOP","JUNGLE","MID","ADC","SUP"];
 
   useEffect(() => {
-    const fetchData = async () => {
-      const querySnapshot = await getDocs(collection(db, "lolUsers"));
-      const data = querySnapshot.docs.map((doc) => ({
-        id: doc.id,
-        ...doc.data(),
-      }));
-      setUsers(data);
-    };
-    fetchData();
+    load();
   }, []);
 
-  const tierOrder = [
-    "IRON","BRONZE","SILVER","GOLD","PLATINUM",
-    "EMERALD","DIAMOND","MASTER","GRANDMASTER","CHALLENGER"
-  ];
-
-  const getTierScore = (tier) => {
-    const [base, value] = tier.toUpperCase().split(" ");
-    return tierOrder.indexOf(base) * 1000 + (parseInt(value) || 0);
+  const load = async () => {
+    const data = await getDocs(collection(db, "lolUsers"));
+    setUsers(data.docs.map(d => ({ id:d.id, ...d.data() })));
   };
 
-  const getTierColor = (tier) => {
-    const base = tier.toUpperCase().split(" ")[0];
-    const colors = {
-      CHALLENGER: "#ef4444",
-      GRANDMASTER: "#f97316",
-      MASTER: "#9333ea",
-      DIAMOND: "#3b82f6",
-      EMERALD: "#10b981",
-      PLATINUM: "#14b8a6",
-      GOLD: "#eab308",
-      SILVER: "#9ca3af",
-      BRONZE: "#92400e",
-      IRON: "#6b7280",
+  /* 티어 정렬 */
+  const tierRank = ["IRON","BRONZE","SILVER","GOLD","PLATINUM","EMERALD","DIAMOND","MASTER","GRANDMASTER","CHALLENGER"];
+
+  const getScore = (tier) => {
+    if (!tier) return 0;
+    const [base, num] = tier.toUpperCase().split(" ");
+    const tierIndex = tierRank.indexOf(base) * 100;
+
+    // 🔥 숫자 낮을수록 높은 티어
+    const division = num ? (5 - parseInt(num)) : 0;
+
+    return tierIndex + division;
+  };
+
+  const getColor = (tier) => {
+    const base = tier?.split(" ")[0];
+    const map = {
+      CHALLENGER:"#ef4444",
+      GRANDMASTER:"#f97316",
+      MASTER:"#9333ea",
+      DIAMOND:"#3b82f6",
+      EMERALD:"#10b981",
+      PLATINUM:"#14b8a6",
+      GOLD:"#eab308",
+      SILVER:"#9ca3af",
+      BRONZE:"#92400e",
+      IRON:"#6b7280",
     };
-    return colors[base];
+    return map[base] || "#999";
+  };
+
+  const formatTier = (tier) => {
+    if (!tier) return "";
+    const [base, num] = tier.split(" ");
+    if (["MASTER","GRANDMASTER","CHALLENGER"].includes(base) && num) {
+      return `${base} ${num}LP`;
+    }
+    return num ? `${base} ${num}` : base;
+  };
+
+  const toggleMain = (l) => {
+    setMainLines(prev =>
+      prev.includes(l) ? prev.filter(x=>x!==l) : [...prev, l]
+    );
+    setSubLines(prev => prev.filter(x=>x!==l));
+  };
+
+  const toggleSub = (l) => {
+    setSubLines(prev =>
+      prev.includes(l) ? prev.filter(x=>x!==l) : [...prev, l]
+    );
+    setMainLines(prev => prev.filter(x=>x!==l));
   };
 
   const addUser = async () => {
@@ -70,7 +88,7 @@ export default function Lol() {
     };
 
     const docRef = await addDoc(collection(db, "lolUsers"), newUser);
-    setUsers((prev) => [...prev, { id: docRef.id, ...newUser }]);
+    setUsers(prev => [...prev, { id:docRef.id, ...newUser }]);
 
     setName("");
     setTier("");
@@ -80,39 +98,54 @@ export default function Lol() {
 
   const removeUser = async (id) => {
     await deleteDoc(doc(db, "lolUsers", id));
-    setUsers((prev) => prev.filter((u) => u.id !== id));
+    setUsers(prev => prev.filter(u=>u.id !== id));
   };
 
   const filtered = users
-    .filter(
-      (u) =>
-        u.name.toLowerCase().includes(search.toLowerCase()) ||
-        u.tier.toLowerCase().includes(search.toLowerCase())
+    .filter(u =>
+      u.name.toLowerCase().includes(search.toLowerCase()) ||
+      u.tier.toLowerCase().includes(search.toLowerCase())
     )
-    .sort((a, b) =>
-      sort === "high"
-        ? getTierScore(b.tier) - getTierScore(a.tier)
-        : getTierScore(a.tier) - getTierScore(b.tier)
+    .sort((a,b)=>
+      sort==="high"
+        ? getScore(b.tier)-getScore(a.tier)
+        : getScore(a.tier)-getScore(b.tier)
     );
 
   return (
-    <div style={container}>
+    <div style={wrap}>
       <h1>👥 리그오브레전드 인원 리스트</h1>
 
-      {/* 🔥 등록 영역 */}
+      {/* 등록 */}
       <div style={box}>
-        <h3>등록</h3>
-        <input placeholder="닉네임" value={name} onChange={(e)=>setName(e.target.value)} style={input}/>
-        <input placeholder="티어" value={tier} onChange={(e)=>setTier(e.target.value)} style={input}/>
+        <input placeholder="닉네임" value={name} onChange={e=>setName(e.target.value)} style={input}/>
+        <input placeholder="티어 (예: GOLD 3 / MASTER 300)" value={tier} onChange={e=>setTier(e.target.value)} style={input}/>
 
         <div style={{display:"flex", gap:10, marginTop:10}}>
           <div style={{position:"relative"}}>
             <div style={dropdownBtn} onClick={()=>setOpen(!open)}>라인 선택 ▼</div>
+
             {open && (
               <div style={dropdown}>
-                {lineList.map(l=>(
+                <b>주라인</b>
+                {lines.map(l=>(
                   <label key={l}>
-                    <input type="checkbox" onChange={()=>setMainLines([...mainLines,l])}/> {l}
+                    <input type="checkbox"
+                      checked={mainLines.includes(l)}
+                      onChange={()=>toggleMain(l)}
+                    /> {l}
+                  </label>
+                ))}
+
+                <hr/>
+
+                <b>부라인</b>
+                {lines.map(l=>(
+                  <label key={l}>
+                    <input type="checkbox"
+                      checked={subLines.includes(l)}
+                      onChange={()=>toggleSub(l)}
+                    /> {l}
                   </label>
                 ))}
               </div>
@@ -123,45 +156,51 @@ export default function Lol() {
         </div>
       </div>
 
-      {/* 🔥 검색 / 정렬 */}
+      {/* 검색 */}
       <div style={box}>
-        <h3>검색 / 정렬</h3>
-        <input placeholder="검색" value={search} onChange={(e)=>setSearch(e.target.value)} style={input}/>
-        <select value={sort} onChange={(e)=>setSort(e.target.value)} style={input}>
+        <input placeholder="검색" value={search} onChange={e=>setSearch(e.target.value)} style={input}/>
+        <select value={sort} onChange={e=>setSort(e.target.value)} style={input}>
           <option value="high">티어 높은순</option>
           <option value="low">티어 낮은순</option>
         </select>
       </div>
 
-      {/* 🔥 카드 */}
+      {/* 카드 */}
       <div style={grid}>
-        {filtered.map((user)=>(
+        {filtered.map(user=>(
           <div key={user.id} style={card}>
             <h3>{user.name}</h3>
 
-            <div style={{marginTop:5}}>
-              <span style={{...tierTag, background:getTierColor(user.tier)}}>
-                {user.tier}
-              </span>
-            </div>
+            <span style={{...tierTag, background:getColor(user.tier)}}>
+              {formatTier(user.tier)}
+            </span>
 
             <div style={lineBox}>
-              <div>주라인: {user.mainLines.join(", ")}</div>
-              <div>부라인: {user.subLines.join(", ")}</div>
+              <div style={row}>
+                <span>주라인</span>
+                <div style={tags}>
+                  {user.mainLines.map((l,i)=><span key={i} style={mainTag}>{l}</span>)}
+                </div>
+              </div>
+
+              <div style={row}>
+                <span>부라인</span>
+                <div style={tags}>
+                  {user.subLines.map((l,i)=><span key={i} style={subTag}>{l}</span>)}
+                </div>
+              </div>
             </div>
 
             <button
               style={delBtn}
               onClick={()=>removeUser(user.id)}
-              onMouseEnter={(e)=>{
+              onMouseEnter={e=>{
                 e.target.style.transform="translateY(-2px)";
                 e.target.style.background="#dc2626";
-                e.target.style.boxShadow="0 6px 14px rgba(0,0,0,0.2)";
               }}
-              onMouseLeave={(e)=>{
+              onMouseLeave={e=>{
                 e.target.style.transform="translateY(0)";
                 e.target.style.background="#ef4444";
-                e.target.style.boxShadow="none";
               }}
             >
               삭제
@@ -175,12 +214,21 @@ export default function Lol() {
 
 /* 스타일 */
 
-const container = { padding:30, background:"#f3f4f6" };
+const wrap = { padding:30, background:"#f3f4f6" };
 const box = { background:"white", padding:20, borderRadius:14, marginBottom:20 };
 const input = { marginRight:10, padding:8, border:"1px solid #ddd", borderRadius:6 };
 
 const dropdownBtn = { padding:8, border:"1px solid #ddd", borderRadius:6, cursor:"pointer" };
-const dropdown = { position:"absolute", top:40, background:"white", padding:10, border:"1px solid #ddd", zIndex:999 };
+
+const dropdown = {
+  position:"absolute",
+  top:40,
+  background:"white",
+  padding:10,
+  border:"1px solid #ddd",
+  borderRadius:8,
+  zIndex:999
+};
 
 const addBtn = {
   padding:"10px 16px",
@@ -199,9 +247,9 @@ const grid = {
 
 const card = {
   background:"white",
-  padding:16,
-  borderRadius:14,
-  boxShadow:"0 8px 20px rgba(0,0,0,0.08)",
+  padding:20,
+  borderRadius:20,
+  boxShadow:"0 10px 25px rgba(0,0,0,0.08)",
   display:"flex",
   flexDirection:"column",
   gap:10
@@ -209,24 +257,44 @@ const card = {
 
 const tierTag = {
   color:"white",
+  padding:"6px 14px",
+  borderRadius:"999px",
+  fontSize:12,
+  fontWeight:"bold",
+  width:"fit-content"
+};
+
+const lineBox = {
+  background:"#eef2f7",
+  padding:12,
+  borderRadius:12
+};
+
+const row = { display:"flex", justifyContent:"space-between", marginBottom:6 };
+const tags = { display:"flex", gap:6 };
+
+const mainTag = {
+  background:"#6366f1",
+  color:"white",
   padding:"4px 10px",
   borderRadius:"999px",
   fontSize:12
 };
 
-const lineBox = {
-  background:"#eef2f7",
-  padding:10,
-  borderRadius:10
+const subTag = {
+  background:"#e5e7eb",
+  padding:"4px 10px",
+  borderRadius:"999px",
+  fontSize:12
 };
 
 const delBtn = {
   marginTop:10,
   background:"#ef4444",
   color:"white",
-  padding:10,
+  padding:12,
   border:"none",
-  borderRadius:10,
+  borderRadius:12,
   cursor:"pointer",
-  transition:"all 0.2s ease"
+  transition:"all 0.2s"
 };
