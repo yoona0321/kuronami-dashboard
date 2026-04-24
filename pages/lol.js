@@ -21,14 +21,37 @@ export default function Lol() {
     setUsers(data.docs.map(d => ({ id:d.id, ...d.data() })));
   };
 
-  const tierRank = ["IRON","BRONZE","SILVER","GOLD","PLATINUM","EMERALD","DIAMOND","MASTER","GRANDMASTER","CHALLENGER"];
+  /* 🔥 티어 순서 (롤 기준 정확) */
+  const tierRank = [
+    "IRON","BRONZE","SILVER","GOLD",
+    "PLATINUM","EMERALD","DIAMOND",
+    "MASTER","GRANDMASTER","CHALLENGER"
+  ];
 
+  /* 🔥 완벽 정렬 함수 */
   const getScore = (tier) => {
     if (!tier) return 0;
-    const [base, num] = tier.toUpperCase().split(" ");
-    const tierIndex = tierRank.indexOf(base) * 100;
-    const division = num ? (5 - parseInt(num)) : 0; // 1이 제일 높음
-    return tierIndex + division;
+
+    const [base, value] = tier.toUpperCase().split(" ");
+    const tierIndex = tierRank.indexOf(base);
+
+    let score = tierIndex * 100;
+
+    if (value) {
+      const num = parseInt(value);
+
+      // 일반 티어 (1~4 → 1이 최고)
+      if (num >= 1 && num <= 4) {
+        score += (5 - num) * 10;
+      }
+
+      // 마스터 이상 (LP)
+      else if (num > 4) {
+        score += num / 10;
+      }
+    }
+
+    return score;
   };
 
   const getColor = (tier) => {
@@ -51,9 +74,11 @@ export default function Lol() {
   const formatTier = (tier) => {
     if (!tier) return "";
     const [base, num] = tier.split(" ");
+
     if (["MASTER","GRANDMASTER","CHALLENGER"].includes(base) && num) {
       return `${base} ${num}LP`;
     }
+
     return num ? `${base} ${num}` : base;
   };
 
@@ -70,12 +95,20 @@ export default function Lol() {
   const addUser = async () => {
     if (!name || !tier || mainLines.length === 0) return;
 
-    const newUser = { name, tier: tier.toUpperCase(), mainLines, subLines };
+    const newUser = {
+      name,
+      tier: tier.toUpperCase(),
+      mainLines,
+      subLines,
+    };
 
     const docRef = await addDoc(collection(db, "lolUsers"), newUser);
     setUsers(prev => [...prev, { id:docRef.id, ...newUser }]);
 
-    setName(""); setTier(""); setMainLines([]); setSubLines([]);
+    setName("");
+    setTier("");
+    setMainLines([]);
+    setSubLines([]);
   };
 
   const removeUser = async (id) => {
@@ -98,7 +131,7 @@ export default function Lol() {
     <div style={wrap}>
       <h1>👥 리그오브레전드 인원 리스트</h1>
 
-      {/* 🔥 등록 한줄 */}
+      {/* 등록 */}
       <div style={box}>
         <div style={registerRow}>
 
@@ -159,7 +192,7 @@ export default function Lol() {
         </div>
       </div>
 
-      {/* 🔍 검색 */}
+      {/* 검색 */}
       <div style={box}>
         <input placeholder="검색" value={search} onChange={e=>setSearch(e.target.value)} style={input}/>
         <select value={sort} onChange={e=>setSort(e.target.value)} style={input}>
