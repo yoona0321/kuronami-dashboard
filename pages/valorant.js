@@ -10,6 +10,9 @@ export default function Valorant() {
   const [subRoles, setSubRoles] = useState([]);
   const [open, setOpen] = useState(false);
 
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState("high");
+
   const roles = ["타격대","척후대","전략가","엄호대","ALL"];
 
   useEffect(() => {
@@ -19,6 +22,30 @@ export default function Valorant() {
   const load = async () => {
     const data = await getDocs(collection(db, "valorantUsers"));
     setUsers(data.docs.map(d => ({ id:d.id, ...d.data() })));
+  };
+
+  /* 티어 순서 */
+  const tierRank = [
+    "아이언","브론즈","실버","골드",
+    "플레티넘","다이아몬드","초월자",
+    "불멸","레디언트"
+  ];
+
+  /* 점수 계산 */
+  const getScore = (tier) => {
+    if (!tier) return 0;
+
+    const [base, num] = tier.split(" ");
+    const index = tierRank.indexOf(base);
+
+    let score = index * 100;
+
+    if (base !== "레디언트" && num) {
+      const n = parseInt(num);
+      score += (4 - n) * 10;
+    }
+
+    return score;
   };
 
   const getColor = (tier) => {
@@ -70,11 +97,20 @@ export default function Valorant() {
     setUsers(prev => prev.filter(u=>u.id !== id));
   };
 
+  /* 검색 + 정렬 */
+  const filtered = users
+    .filter(u => u.name?.toLowerCase().includes(search.toLowerCase()))
+    .sort((a,b) =>
+      sort === "high"
+        ? getScore(b.tier) - getScore(a.tier)
+        : getScore(a.tier) - getScore(b.tier)
+    );
+
   return (
     <div style={wrap}>
       <h1>🔫 발로란트 인원 리스트</h1>
 
-      {/* 입력 */}
+      {/* 등록 */}
       <div style={box}>
         <div style={row}>
           <input placeholder="닉네임" value={name} onChange={e=>setName(e.target.value)} style={input}/>
@@ -114,18 +150,33 @@ export default function Valorant() {
         </div>
       </div>
 
+      {/* 검색 + 정렬 */}
+      <div style={box}>
+        <div style={row}>
+          <input
+            placeholder="검색"
+            value={search}
+            onChange={e=>setSearch(e.target.value)}
+            style={input}
+          />
+
+          <select value={sort} onChange={e=>setSort(e.target.value)} style={input}>
+            <option value="high">티어 높은순</option>
+            <option value="low">티어 낮은순</option>
+          </select>
+        </div>
+      </div>
+
       {/* 카드 */}
       <div style={grid}>
-        {users.map(user => (
+        {filtered.map(user => (
           <div key={user.id} style={card}>
             <h3>{user.name}</h3>
 
-            {/* 티어 */}
             <div style={{...tierBar, background:getColor(user.tier)}}>
               {user.tier}
             </div>
 
-            {/* 역할 */}
             <div style={roleBox}>
               <div style={roleRow}>
                 <span style={label}>주라인</span>
@@ -146,7 +197,6 @@ export default function Valorant() {
               </div>
             </div>
 
-            {/* 삭제 */}
             <button
               style={delBtnBig}
               onClick={()=>removeUser(user.id)}
@@ -161,119 +211,3 @@ export default function Valorant() {
     </div>
   );
 }
-
-/* 스타일 */
-
-const wrap = { padding:30, background:"#f3f4f6", minHeight:"100vh" };
-
-const box = { background:"white", padding:20, borderRadius:14, marginBottom:20 };
-
-const row = { display:"flex", gap:10, flexWrap:"wrap" };
-
-const input = { padding:8, border:"1px solid #ddd", borderRadius:6 };
-
-const addBtn = {
-  padding:"10px 16px",
-  background:"#6366f1",
-  color:"white",
-  border:"none",
-  borderRadius:10,
-  cursor:"pointer"
-};
-
-const grid = {
-  display:"grid",
-  gridTemplateColumns:"repeat(auto-fill, minmax(220px, 1fr))",
-  gap:16
-};
-
-const card = {
-  background:"white",
-  padding:20,
-  borderRadius:20,
-  boxShadow:"0 10px 25px rgba(0,0,0,0.08)"
-};
-
-const tierBar = {
-  color:"white",
-  padding:"8px 16px",
-  borderRadius:"999px",
-  fontSize:13,
-  marginTop:8,
-  display:"inline-block",
-  fontWeight:"bold"
-};
-
-const roleBox = {
-  marginTop:12,
-  background:"#eef2f7",
-  padding:12,
-  borderRadius:12
-};
-
-const roleRow = {
-  display:"flex",
-  justifyContent:"space-between",
-  alignItems:"center",
-  marginBottom:6
-};
-
-const badgeWrap = {
-  display:"flex",
-  gap:6,
-  flexWrap:"wrap"
-};
-
-const mainBadge = {
-  background:"#6366f1",
-  color:"white",
-  padding:"4px 10px",
-  borderRadius:"999px",
-  fontSize:12
-};
-
-const subBadge = {
-  background:"#d1d5db",
-  color:"#333",
-  padding:"4px 10px",
-  borderRadius:"999px",
-  fontSize:12
-};
-
-const label = {
-  fontSize:12,
-  color:"#888"
-};
-
-const delBtnBig = {
-  marginTop:12,
-  width:"100%",
-  background:"#ef4444",
-  color:"white",
-  padding:12,
-  border:"none",
-  borderRadius:12,
-  cursor:"pointer",
-  fontWeight:"bold",
-  transition:"0.2s"
-};
-
-const dropdownBtn = {
-  padding:"8px",
-  border:"1px solid #ddd",
-  borderRadius:6,
-  cursor:"pointer"
-};
-
-const dropdown = {
-  position:"absolute",
-  top:40,
-  background:"white",
-  padding:10,
-  border:"1px solid #ddd",
-  borderRadius:8,
-  zIndex:999,
-  display:"flex",
-  flexDirection:"column",
-  gap:5
-};
