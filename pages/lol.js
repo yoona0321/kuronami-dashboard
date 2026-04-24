@@ -36,7 +36,7 @@ export default function Lol() {
     }
   };
 
-  // 🔥 출력 포맷 (핵심)
+  // 🔥 티어 출력 규칙
   const formatTier = (tier) => {
     const parts = tier.toUpperCase().split(" ");
     const base = parts[0];
@@ -99,24 +99,34 @@ export default function Lol() {
         marginBottom: "30px",
         boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
       }}>
+
         <input
           placeholder="닉네임"
           value={name}
           onChange={(e) => setName(e.target.value)}
           style={inputStyle}
         />
+
         <input
           placeholder="티어 (예: GOLD 3 / MASTER 300)"
           value={tier}
           onChange={(e) => setTier(e.target.value)}
           style={inputStyle}
         />
-        <input
-          placeholder="라인"
+
+        {/* 🔥 드롭다운 */}
+        <select
           value={line}
           onChange={(e) => setLine(e.target.value)}
           style={inputStyle}
-        />
+        >
+          <option value="">라인 선택</option>
+          <option value="TOP">TOP</option>
+          <option value="JUNGLE">JUNGLE</option>
+          <option value="MID">MID</option>
+          <option value="ADC">ADC</option>
+          <option value="SUP">SUP</option>
+        </select>
 
         <button onClick={addUser} style={buttonStyle}>
           추가
@@ -199,8 +209,10 @@ export default function Lol() {
 const inputStyle = {
   padding: "8px",
   marginRight: "10px",
-  borderRadius: "6px",
-  border: "1px solid #ddd"
+  borderRadius: "8px",
+  border: "1px solid #ddd",
+  background: "white",
+  cursor: "pointer"
 };
 
 const buttonStyle = {
