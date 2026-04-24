@@ -21,45 +21,57 @@ export default function Valorant() {
     setUsers(data.docs.map(d => ({ id:d.id, ...d.data() })));
   };
 
-  /* 발로란트 티어 순서 */
+  /* ✅ 발로란트 한글 티어 순서 */
   const tierRank = [
-    "IRON","BRONZE","SILVER","GOLD",
-    "PLATINUM","DIAMOND","ASCENDANT",
-    "IMMORTAL","RADIANT"
+    "아이언",
+    "브론즈",
+    "실버",
+    "골드",
+    "플레티넘",
+    "다이아몬드",
+    "초월자",
+    "불멸",
+    "레디언트"
   ];
 
-  /* 정렬 점수 */
+  /* ✅ 정렬 점수 */
   const getScore = (tier) => {
     if (!tier) return 0;
 
-    const [base, num] = tier.toUpperCase().split(" ");
-    const tierIndex = tierRank.indexOf(base);
+    const parts = tier.split(" ");
+    const base = parts[0];
+    const num = parts[1];
 
+    const tierIndex = tierRank.indexOf(base);
     let score = tierIndex * 100;
 
-    if (num) {
+    // 레디언트는 숫자 없음
+    if (base !== "레디언트" && num) {
       const n = parseInt(num);
       if (n >= 1 && n <= 3) {
-        score += (4 - n) * 10; // 1이 제일 높음
+        score += (4 - n) * 10;
       }
     }
 
     return score;
   };
 
+  /* ✅ 색상 */
   const getColor = (tier) => {
     const base = tier?.split(" ")[0];
+
     const map = {
-      RADIANT:"#facc15",
-      IMMORTAL:"#ef4444",
-      ASCENDANT:"#22c55e",
-      DIAMOND:"#3b82f6",
-      PLATINUM:"#14b8a6",
-      GOLD:"#eab308",
-      SILVER:"#9ca3af",
-      BRONZE:"#92400e",
-      IRON:"#6b7280",
+      레디언트:"#facc15",
+      불멸:"#ef4444",
+      초월자:"#22c55e",
+      다이아몬드:"#3b82f6",
+      플레티넘:"#14b8a6",
+      골드:"#eab308",
+      실버:"#9ca3af",
+      브론즈:"#92400e",
+      아이언:"#6b7280",
     };
+
     return map[base] || "#999";
   };
 
@@ -68,7 +80,7 @@ export default function Valorant() {
 
     const newUser = {
       name,
-      tier: tier.toUpperCase(),
+      tier: tier, // ✅ 대문자 제거 (한글 유지)
       role
     };
 
@@ -111,7 +123,7 @@ export default function Valorant() {
           />
 
           <input
-            placeholder="티어 (예: GOLD 2)"
+            placeholder="티어 (예: 골드 2 / 레디언트)"
             value={tier}
             onChange={e=>setTier(e.target.value)}
             style={input}
