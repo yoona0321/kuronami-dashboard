@@ -19,9 +19,13 @@ export default function Lol() {
     localStorage.setItem("lolUsers", JSON.stringify(users));
   }, [users]);
 
-  // 🎨 티어 색상
+  // 🎨 티어 색상 (숫자 포함 대응)
   const getTierColor = (tier) => {
-    switch (tier.toUpperCase()) {
+    const baseTier = tier.toUpperCase().split(" ")[0];
+
+    switch (baseTier) {
+      case "CHALLENGER": return "#ef4444";
+      case "GRANDMASTER": return "#f97316";
       case "MASTER": return "#9333ea";
       case "DIAMOND": return "#3b82f6";
       case "PLATINUM": return "#14b8a6";
@@ -78,7 +82,7 @@ export default function Lol() {
           style={inputStyle}
         />
         <input
-          placeholder="티어"
+          placeholder="티어 (예: MASTER 200)"
           value={tier}
           onChange={(e) => setTier(e.target.value.toUpperCase())}
           style={inputStyle}
@@ -102,74 +106,91 @@ export default function Lol() {
         gap: "20px"
       }}>
 
-        {users.map((user, i) => (
-          <div
-            key={i}
-            style={cardStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-6px)";
-              e.currentTarget.style.boxShadow = "0 16px 30px rgba(0,0,0,0.12)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0px)";
-              e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.08)";
-            }}
-          >
+        {users.map((user, i) => {
+          const [tierName, tierPoint] = user.tier.split(" ");
 
-            {/* 닉네임 */}
-            <h3 style={{ marginBottom: "10px", fontSize: "18px" }}>
-              {user.name}
-            </h3>
-
-            {/* 티어 + 라인 */}
-            <div style={{
-              display: "flex",
-              gap: "8px",
-              marginBottom: "12px"
-            }}>
-              <span style={{
-                background: getTierColor(user.tier),
-                color: "white",
-                padding: "5px 12px",
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: "bold"
-              }}>
-                {user.tier}
-              </span>
-
-              <span style={{
-                background: "#e5e7eb",
-                padding: "5px 12px",
-                borderRadius: "999px",
-                fontSize: "12px"
-              }}>
-                {user.line}
-              </span>
-            </div>
-
-            {/* 내부 박스 */}
-            <div style={{
-              background: "#f9fafb",
-              borderRadius: "12px",
-              padding: "12px",
-              fontSize: "13px",
-              color: "#555",
-              marginBottom: "10px"
-            }}>
-              🚧 전적 / 승률 / 포인트 (추후 추가 예정)
-            </div>
-
-            {/* 삭제 */}
-            <button
-              onClick={() => removeUser(i)}
-              style={deleteBtn}
+          return (
+            <div
+              key={i}
+              style={cardStyle}
+              onMouseEnter={(e) => {
+                e.currentTarget.style.transform = "translateY(-6px)";
+                e.currentTarget.style.boxShadow = "0 16px 30px rgba(0,0,0,0.12)";
+              }}
+              onMouseLeave={(e) => {
+                e.currentTarget.style.transform = "translateY(0px)";
+                e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.08)";
+              }}
             >
-              삭제
-            </button>
 
-          </div>
-        ))}
+              {/* 닉네임 */}
+              <h3 style={{ marginBottom: "10px", fontSize: "18px" }}>
+                {user.name}
+              </h3>
+
+              {/* 티어 + 점수 + 라인 */}
+              <div style={{
+                display: "flex",
+                gap: "8px",
+                marginBottom: "12px",
+                alignItems: "center"
+              }}>
+
+                <span style={{
+                  background: getTierColor(user.tier),
+                  color: "white",
+                  padding: "5px 12px",
+                  borderRadius: "999px",
+                  fontSize: "12px",
+                  fontWeight: "bold"
+                }}>
+                  {tierName}
+                </span>
+
+                {tierPoint && (
+                  <span style={{
+                    fontSize: "12px",
+                    color: "#444",
+                    fontWeight: "bold"
+                  }}>
+                    {tierPoint}LP
+                  </span>
+                )}
+
+                <span style={{
+                  background: "#e5e7eb",
+                  padding: "5px 12px",
+                  borderRadius: "999px",
+                  fontSize: "12px"
+                }}>
+                  {user.line}
+                </span>
+
+              </div>
+
+              {/* 내부 박스 */}
+              <div style={{
+                background: "#f9fafb",
+                borderRadius: "12px",
+                padding: "12px",
+                fontSize: "13px",
+                color: "#555",
+                marginBottom: "10px"
+              }}>
+                🚧 전적 / 승률 / 포인트 (추후 추가 예정)
+              </div>
+
+              {/* 삭제 */}
+              <button
+                onClick={() => removeUser(i)}
+                style={deleteBtn}
+              >
+                삭제
+              </button>
+
+            </div>
+          );
+        })}
 
       </div>
 
