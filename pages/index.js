@@ -4,6 +4,7 @@ import { useState } from "react";
 export default function Home() {
   const [openMenu, setOpenMenu] = useState(null);
 
+  // 🎯 카드 스타일
   const cardStyle = {
     background: "linear-gradient(135deg, #ffffff, #f9fafb)",
     padding: "25px",
@@ -23,29 +24,34 @@ export default function Home() {
     e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.06)";
   };
 
+  // 🎯 드롭다운 스타일
   const dropdownStyle = {
     position: "absolute",
-    top: "40px",
+    top: "42px",
     left: 0,
     background: "white",
     borderRadius: "12px",
     boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
     padding: "8px",
-    minWidth: "160px",
+    minWidth: "170px",
     display: "flex",
     flexDirection: "column"
   };
 
   const itemStyle = {
-    padding: "8px",
+    padding: "10px",
     textDecoration: "none",
-    color: "#333"
+    color: "#333",
+    borderRadius: "8px"
   };
 
+  // 🎯 화살표 스타일 (딱 좋은 값)
   const arrowStyle = {
-    fontSize: "10px",
-    marginLeft: "4px",
-    opacity: 0.5
+    fontSize: "13px",
+    marginLeft: "6px",
+    opacity: 0.6,
+    position: "relative",
+    top: "1px"
   };
 
   return (
@@ -62,7 +68,7 @@ export default function Home() {
         zIndex: 100,
         display: "flex",
         alignItems: "center",
-        gap: "20px",
+        gap: "22px",
         padding: "14px 24px",
         background: "rgba(255,255,255,0.9)",
         backdropFilter: "blur(10px)",
@@ -75,7 +81,10 @@ export default function Home() {
 
         {/* 👥 소환사 관리 */}
         <div style={{ position: "relative" }}>
-          <div onClick={() => setOpenMenu(openMenu === "member" ? null : "member")} style={{ cursor: "pointer" }}>
+          <div
+            onClick={() => setOpenMenu(openMenu === "member" ? null : "member")}
+            style={{ cursor: "pointer" }}
+          >
             👥 소환사 관리 <span style={arrowStyle}>▾</span>
           </div>
 
@@ -89,7 +98,10 @@ export default function Home() {
 
         {/* 📢 모집/참여 */}
         <div style={{ position: "relative" }}>
-          <div onClick={() => setOpenMenu(openMenu === "apply" ? null : "apply")} style={{ cursor: "pointer" }}>
+          <div
+            onClick={() => setOpenMenu(openMenu === "apply" ? null : "apply")}
+            style={{ cursor: "pointer" }}
+          >
             📢 모집/참여 <span style={arrowStyle}>▾</span>
           </div>
 
@@ -102,7 +114,10 @@ export default function Home() {
 
         {/* 🏆 기록실 */}
         <div style={{ position: "relative" }}>
-          <div onClick={() => setOpenMenu(openMenu === "record" ? null : "record")} style={{ cursor: "pointer" }}>
+          <div
+            onClick={() => setOpenMenu(openMenu === "record" ? null : "record")}
+            style={{ cursor: "pointer" }}
+          >
             🏆 기록실 <span style={arrowStyle}>▾</span>
           </div>
 
