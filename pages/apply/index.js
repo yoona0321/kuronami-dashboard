@@ -57,22 +57,30 @@ export default function Apply() {
         <div key={post.id} style={card}>
           
           <div style={cardTop}>
-            <span style={status(post)}>
-              {post.participants?.length >= post.max ? "마감됨" : "모집중"}
-            </span>
+  
+  {/* 왼쪽: 모집중 + 제목 */}
+  <div style={{display:"flex", alignItems:"center", gap:10}}>
+    <span style={status(post)}>
+      {post.participants?.length >= post.max ? "마감됨" : "모집중"}
+    </span>
 
-            <div style={countBox}>
-              {post.participants?.length || 0} / {post.max}
-            </div>
-          </div>
+    <h3 style={{margin:0}}>
+      {post.title || "제목 없음"}
+    </h3>
+  </div>
 
-          <h3 style={{marginTop:12}}>
-            {post.title || "제목 없음"}
-          </h3>
+  {/* 오른쪽: 개최자 + 인원 */}
+  <div style={{display:"flex", alignItems:"center", gap:10}}>
+    <span style={{fontSize:13, color:"#666"}}>
+      개최자: -
+    </span>
 
-          <p style={{color:"#888", fontSize:13}}>
-            방장: -
-          </p>
+    <div style={countBox}>
+      {post.participants?.length || 0} / {post.max}
+    </div>
+  </div>
+
+</div>
 
           <button
             style={enterBtn}
