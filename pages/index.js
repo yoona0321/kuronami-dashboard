@@ -4,9 +4,30 @@ import { useState } from "react";
 export default function Home() {
   const [openMenu, setOpenMenu] = useState(null);
 
+  // 카드 스타일
+  const cardStyle = {
+    background: "white",
+    padding: "25px",
+    borderRadius: "16px",
+    boxShadow: "0 8px 25px rgba(0,0,0,0.08)",
+    transition: "all 0.2s ease",
+    cursor: "pointer"
+  };
+
+  const handleHover = (e) => {
+    e.currentTarget.style.transform = "translateY(-6px)";
+    e.currentTarget.style.boxShadow = "0 15px 35px rgba(0,0,0,0.12)";
+  };
+
+  const handleLeave = (e) => {
+    e.currentTarget.style.transform = "translateY(0px)";
+    e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
+  };
+
+  // 드롭다운 스타일
   const dropdownStyle = {
     position: "absolute",
-    top: "42px",
+    top: "45px",
     left: 0,
     background: "white",
     borderRadius: "12px",
@@ -14,7 +35,8 @@ export default function Home() {
     padding: "8px",
     minWidth: "170px",
     display: "flex",
-    flexDirection: "column"
+    flexDirection: "column",
+    animation: "fadeIn 0.2s ease"
   };
 
   const itemStyle = {
@@ -24,28 +46,44 @@ export default function Home() {
   };
 
   const arrowStyle = {
-    fontSize: "15px",
+    fontSize: "14px",
     marginLeft: "6px",
-    opacity: 0.7
+    opacity: 0.6
   };
 
   return (
-    <div style={{ padding: "30px" }}>
+    <div style={{ background: "#f3f4f6", minHeight: "100vh" }}>
+
+      {/* 애니메이션 */}
+      <style>
+        {`
+        @keyframes fadeIn {
+          from {
+            opacity: 0;
+            transform: translateY(-8px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0px);
+          }
+        }
+        `}
+      </style>
 
       {/* 🔥 메뉴바 */}
       <div style={{
         display: "flex",
         gap: "20px",
-        padding: "15px",
+        padding: "15px 25px",
         background: "white",
-        borderRadius: "10px"
+        boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
       }}>
 
         <div style={{ fontWeight: "bold" }}>
           쿠로나미 🎮
         </div>
 
-        {/* 👥 소환사 관리 (hover 적용) */}
+        {/* 👥 */}
         <div
           style={{ position: "relative" }}
           onMouseEnter={() => setOpenMenu("member")}
@@ -63,7 +101,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* 📢 모집/참여 */}
+        {/* 📢 */}
         <div
           style={{ position: "relative" }}
           onMouseEnter={() => setOpenMenu("apply")}
@@ -80,7 +118,7 @@ export default function Home() {
           )}
         </div>
 
-        {/* 🏆 기록실 */}
+        {/* 🏆 */}
         <div
           style={{ position: "relative" }}
           onMouseEnter={() => setOpenMenu("record")}
@@ -102,6 +140,50 @@ export default function Home() {
         <Link href="/ranking">🎯 랭킹</Link>
         <Link href="/finance">💰 장부</Link>
 
+      </div>
+
+      {/* 🔥 본문 다시 복구 */}
+      <div style={{ padding: "30px" }}>
+        <h1 style={{ marginBottom: "25px" }}>쿠로나미 대시보드</h1>
+
+        <div style={{ display: "flex", gap: "20px" }}>
+
+          <div
+            style={{ ...cardStyle, flex: 1 }}
+            onMouseEnter={handleHover}
+            onMouseLeave={handleLeave}
+          >
+            <h2>🔥 이번 주 TOP 3</h2>
+            <p style={{ color: "#888" }}>아직 데이터가 없습니다.</p>
+          </div>
+
+          <div
+            style={{ ...cardStyle, flex: 2 }}
+            onMouseEnter={handleHover}
+            onMouseLeave={handleLeave}
+          >
+            <h2>🏆 이번 주 MVP</h2>
+            <div style={{
+              background: "#eef2ff",
+              padding: "20px",
+              borderRadius: "12px"
+            }}>
+              <p style={{ color: "#555" }}>
+                아직 MVP가 선정되지 않았습니다.
+              </p>
+            </div>
+          </div>
+
+          <div
+            style={{ ...cardStyle, flex: 1 }}
+            onMouseEnter={handleHover}
+            onMouseLeave={handleLeave}
+          >
+            <h2>📜 최근 내전</h2>
+            <p style={{ color: "#888" }}>기록이 없습니다.</p>
+          </div>
+
+        </div>
       </div>
 
     </div>
