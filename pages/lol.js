@@ -4,7 +4,7 @@ export default function Lol() {
   const [users, setUsers] = useState([]);
   const [name, setName] = useState("");
   const [tier, setTier] = useState("");
-  const [line, setLine] = useState("");
+  const [lines, setLines] = useState([]); // 🔥 배열로 변경
 
   useEffect(() => {
     const saved = localStorage.getItem("lolUsers");
@@ -36,7 +36,7 @@ export default function Lol() {
     }
   };
 
-  // 🔥 티어 출력 규칙
+  // 티어 출력
   const formatTier = (tier) => {
     const parts = tier.toUpperCase().split(" ");
     const base = parts[0];
@@ -48,33 +48,40 @@ export default function Lol() {
       return `${base} ${value}LP`;
     }
 
-    if (value) {
-      return `${base} ${value}`;
-    }
-
+    if (value) return `${base} ${value}`;
     return base;
   };
 
+  // 🔥 라인 토글
+  const toggleLine = (line) => {
+    if (lines.includes(line)) {
+      setLines(lines.filter(l => l !== line));
+    } else {
+      setLines([...lines, line]);
+    }
+  };
+
   const addUser = () => {
-    if (!name || !tier || !line) return;
+    if (!name || !tier || lines.length === 0) return;
 
     const newUser = {
       name,
       tier: tier.toUpperCase(),
-      line
+      lines
     };
 
     setUsers([...users, newUser]);
 
     setName("");
     setTier("");
-    setLine("");
+    setLines([]);
   };
 
   const removeUser = (index) => {
-    const updated = users.filter((_, i) => i !== index);
-    setUsers(updated);
+    setUsers(users.filter((_, i) => i !== index));
   };
+
+  const lineList = ["TOP", "JUNGLE", "MID", "ADC", "SUP"];
 
   return (
     <div style={{
@@ -83,23 +90,13 @@ export default function Lol() {
       minHeight: "100vh"
     }}>
 
-      <h1 style={{ marginBottom: "10px" }}>
-        👥 리그오브레전드 인원 리스트
-      </h1>
-
+      <h1>👥 리그오브레전드 인원 리스트</h1>
       <p style={{ color: "#666", marginBottom: "25px" }}>
-        등록된 모든 인원의 티어와 라인을 확인할 수 있습니다.
+        여러 라인을 선택할 수 있습니다.
       </p>
 
       {/* 입력 */}
-      <div style={{
-        background: "white",
-        padding: "20px",
-        borderRadius: "14px",
-        marginBottom: "30px",
-        boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
-      }}>
-
+      <div style={boxStyle}>
         <input
           placeholder="닉네임"
           value={name}
@@ -114,19 +111,25 @@ export default function Lol() {
           style={inputStyle}
         />
 
-        {/* 🔥 드롭다운 */}
-        <select
-          value={line}
-          onChange={(e) => setLine(e.target.value)}
-          style={inputStyle}
-        >
-          <option value="">라인 선택</option>
-          <option value="TOP">TOP</option>
-          <option value="JUNGLE">JUNGLE</option>
-          <option value="MID">MID</option>
-          <option value="ADC">ADC</option>
-          <option value="SUP">SUP</option>
-        </select>
+        {/* 🔥 멀티 라인 버튼 */}
+        <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
+          {lineList.map((l) => (
+            <button
+              key={l}
+              onClick={() => toggleLine(l)}
+              style={{
+                padding: "6px 10px",
+                borderRadius: "999px",
+                border: "none",
+                cursor: "pointer",
+                background: lines.includes(l) ? "#6366f1" : "#e5e7eb",
+                color: lines.includes(l) ? "white" : "#333"
+              }}
+            >
+              {l}
+            </button>
+          ))}
+        </div>
 
         <button onClick={addUser} style={buttonStyle}>
           추가
@@ -134,29 +137,13 @@ export default function Lol() {
       </div>
 
       {/* 카드 */}
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(3, 1fr)",
-        gap: "20px"
-      }}>
+      <div style={gridStyle}>
         {users.map((user, i) => (
-          <div
-            key={i}
-            style={cardStyle}
-            onMouseEnter={(e) => {
-              e.currentTarget.style.transform = "translateY(-6px)";
-              e.currentTarget.style.boxShadow = "0 16px 30px rgba(0,0,0,0.12)";
-            }}
-            onMouseLeave={(e) => {
-              e.currentTarget.style.transform = "translateY(0px)";
-              e.currentTarget.style.boxShadow = "0 10px 25px rgba(0,0,0,0.08)";
-            }}
-          >
+          <div key={i} style={cardStyle}>
 
-            <h3 style={{ marginBottom: "10px" }}>{user.name}</h3>
+            <h3>{user.name}</h3>
 
-            <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
-
+            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
               <span style={{
                 background: getTierColor(user.tier),
                 color: "white",
@@ -167,33 +154,18 @@ export default function Lol() {
               }}>
                 {formatTier(user.tier)}
               </span>
-
-              <span style={{
-                background: "#e5e7eb",
-                padding: "5px 12px",
-                borderRadius: "999px",
-                fontSize: "12px"
-              }}>
-                {user.line}
-              </span>
-
             </div>
 
-            <div style={{
-              background: "#f9fafb",
-              borderRadius: "12px",
-              padding: "12px",
-              fontSize: "13px",
-              color: "#555",
-              marginBottom: "10px"
-            }}>
-              🚧 전적 / 승률 / 포인트 (추후 추가 예정)
+            {/* 🔥 여러 라인 표시 */}
+            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
+              {user.lines.map((l, idx) => (
+                <span key={idx} style={lineTag}>
+                  {l}
+                </span>
+              ))}
             </div>
 
-            <button
-              onClick={() => removeUser(i)}
-              style={deleteBtn}
-            >
+            <button onClick={() => removeUser(i)} style={deleteBtn}>
               삭제
             </button>
 
@@ -206,16 +178,22 @@ export default function Lol() {
 }
 
 // 스타일
+const boxStyle = {
+  background: "white",
+  padding: "20px",
+  borderRadius: "14px",
+  marginBottom: "30px"
+};
+
 const inputStyle = {
   padding: "8px",
   marginRight: "10px",
-  borderRadius: "8px",
-  border: "1px solid #ddd",
-  background: "white",
-  cursor: "pointer"
+  borderRadius: "6px",
+  border: "1px solid #ddd"
 };
 
 const buttonStyle = {
+  marginTop: "10px",
   padding: "8px 14px",
   background: "#6366f1",
   color: "white",
@@ -234,10 +212,22 @@ const deleteBtn = {
   cursor: "pointer"
 };
 
+const gridStyle = {
+  display: "grid",
+  gridTemplateColumns: "repeat(3, 1fr)",
+  gap: "20px"
+};
+
 const cardStyle = {
   background: "white",
   padding: "20px",
   borderRadius: "18px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
-  transition: "all 0.2s ease"
+  boxShadow: "0 10px 25px rgba(0,0,0,0.08)"
+};
+
+const lineTag = {
+  background: "#e5e7eb",
+  padding: "4px 10px",
+  borderRadius: "999px",
+  fontSize: "12px"
 };
