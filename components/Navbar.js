@@ -1,85 +1,176 @@
 import Link from "next/link";
+import { useState, useEffect } from "react";
 
 export default function Navbar() {
+  const [openMenu, setOpenMenu] = useState(null);
+
+  // 바깥 클릭하면 메뉴 닫힘
+  useEffect(() => {
+    const handleClick = () => setOpenMenu(null);
+    window.addEventListener("click", handleClick);
+    return () => window.removeEventListener("click", handleClick);
+  }, []);
+
+  const toggleMenu = (e, menu) => {
+    e.stopPropagation();
+    setOpenMenu(openMenu === menu ? null : menu);
+  };
+
+  const menuTextStyle = {
+    cursor: "pointer",
+    fontSize: "15px",
+    position: "relative",
+    paddingBottom: "4px",
+    transition: "color 0.2s ease"
+  };
+
+  const underlineStyle = {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    height: "2px",
+    width: "0%",
+    background: "#6366f1",
+    transition: "width 0.3s ease"
+  };
+
+  const dropdownStyle = {
+    position: "absolute",
+    top: "45px",
+    left: 0,
+    background: "white",
+    borderRadius: "12px",
+    boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+    padding: "8px",
+    minWidth: "170px",
+    display: "flex",
+    flexDirection: "column"
+  };
+
+  const itemStyle = {
+    padding: "10px",
+    textDecoration: "none",
+    color: "#333",
+    borderRadius: "8px"
+  };
+
+  const arrowStyle = {
+    fontSize: "14px",
+    marginLeft: "6px",
+    opacity: 0.6
+  };
+
+  const handleMenuHover = (e) => {
+    e.currentTarget.style.color = "#6366f1";
+    e.currentTarget.querySelector(".underline").style.width = "100%";
+  };
+
+  const handleMenuLeave = (e) => {
+    e.currentTarget.style.color = "#333";
+    e.currentTarget.querySelector(".underline").style.width = "0%";
+  };
+
   return (
-    <>
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "30px",
-        padding: "15px 30px",
-        background: "white",
-        borderBottom: "1px solid #eee",
-        position: "sticky",
-        top: 0,
-        zIndex: 100
-      }}>
+    <div style={{
+      display: "flex",
+      gap: "22px",
+      padding: "15px 25px",
+      background: "white",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.05)",
+      alignItems: "center"
+    }}>
 
-        <Link href="/" style={{ fontWeight: "bold", color: "black", textDecoration: "none" }}>
+      {/* 🔥 로고 (홈 이동) */}
+      <Link href="/" style={{ textDecoration: "none", color: "black" }}>
+        <div style={{ fontWeight: "bold", fontSize: "17px", cursor: "pointer" }}>
           쿠로나미 🎮
-        </Link>
+        </div>
+      </Link>
 
-        <div className="menu">
-          <span className="menu-title">👥 소환사 관리 ▾</span>
-          <div className="dropdown">
-            <Link href="/lol">🎮 리그오브레전드</Link>
-            <Link href="/valo">🔫 발로란트</Link>
-          </div>
+      {/* 👥 소환사 관리 */}
+      <div style={{ position: "relative" }}>
+        <div
+          onClick={(e) => toggleMenu(e, "member")}
+          style={menuTextStyle}
+          onMouseEnter={handleMenuHover}
+          onMouseLeave={handleMenuLeave}
+        >
+          👥 소환사 관리 <span style={arrowStyle}>▾</span>
+          <div className="underline" style={underlineStyle}></div>
         </div>
 
-        <Link href="/apply">📢 모집/참여</Link>
-
-        <div className="menu">
-          <span className="menu-title">🏆 기록실 ▾</span>
-          <div className="dropdown">
-            <Link href="/lol-record">🎮 롤 내전 기록</Link>
-            <Link href="/valo-record">🔫 발로 내전 기록</Link>
-            <Link href="/ranking-all">📊 통합 랭킹</Link>
+        {openMenu === "member" && (
+          <div style={dropdownStyle}>
+            <Link href="/lol" style={itemStyle}>🎮 리그오브레전드</Link>
+            <Link href="/valo" style={itemStyle}>🔫 발로란트</Link>
           </div>
-        </div>
-
-        <Link href="/ranking">🎯 랭킹</Link>
-        <Link href="/finance">💰 장부</Link>
-
+        )}
       </div>
 
-      <style jsx>{`
-        .menu {
-          position: relative;
-        }
+      {/* 📢 모집/참여 */}
+      <div style={{ position: "relative" }}>
+        <div
+          onClick={(e) => toggleMenu(e, "apply")}
+          style={menuTextStyle}
+          onMouseEnter={handleMenuHover}
+          onMouseLeave={handleMenuLeave}
+        >
+          📢 모집/참여 <span style={arrowStyle}>▾</span>
+          <div className="underline" style={underlineStyle}></div>
+        </div>
 
-        .menu-title {
-          cursor: pointer;
-        }
+        {openMenu === "apply" && (
+          <div style={dropdownStyle}>
+            <Link href="/apply" style={itemStyle}>📌 내전 모집/참여</Link>
+          </div>
+        )}
+      </div>
 
-        .dropdown {
-          display: none;
-          position: absolute;
-          top: 30px;
-          left: 0;
-          background: white;
-          border-radius: 10px;
-          box-shadow: 0 4px 12px rgba(0,0,0,0.1);
-          padding: 10px;
-          min-width: 180px;
-        }
+      {/* 🏆 기록실 */}
+      <div style={{ position: "relative" }}>
+        <div
+          onClick={(e) => toggleMenu(e, "record")}
+          style={menuTextStyle}
+          onMouseEnter={handleMenuHover}
+          onMouseLeave={handleMenuLeave}
+        >
+          🏆 기록실 <span style={arrowStyle}>▾</span>
+          <div className="underline" style={underlineStyle}></div>
+        </div>
 
-        .dropdown a {
-          display: block;
-          padding: 6px 10px;
-          text-decoration: none;
-          color: black;
-        }
+        {openMenu === "record" && (
+          <div style={dropdownStyle}>
+            <Link href="/lol-record" style={itemStyle}>📊 롤 내전 기록</Link>
+            <Link href="/valo-record" style={itemStyle}>📊 발로 내전 기록</Link>
+            <Link href="/ranking-all" style={itemStyle}>🥇 통합 랭킹</Link>
+          </div>
+        )}
+      </div>
 
-        .dropdown a:hover {
-          background: #f3f4f6;
-          border-radius: 6px;
-        }
+      {/* 🎯 랭킹 */}
+      <Link href="/ranking" style={{ textDecoration: "none" }}>
+        <div
+          style={menuTextStyle}
+          onMouseEnter={handleMenuHover}
+          onMouseLeave={handleMenuLeave}
+        >
+          🎯 랭킹
+          <div className="underline" style={underlineStyle}></div>
+        </div>
+      </Link>
 
-        .menu:hover .dropdown {
-          display: block;
-        }
-      `}</style>
-    </>
+      {/* 💰 장부 */}
+      <Link href="/finance" style={{ textDecoration: "none" }}>
+        <div
+          style={menuTextStyle}
+          onMouseEnter={handleMenuHover}
+          onMouseLeave={handleMenuLeave}
+        >
+          💰 장부
+          <div className="underline" style={underlineStyle}></div>
+        </div>
+      </Link>
+
+    </div>
   );
 }
