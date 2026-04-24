@@ -14,26 +14,20 @@ export default function Lol() {
 
   const lines = ["ALL","TOP","JUNGLE","MID","ADC","SUP"];
 
-  useEffect(() => {
-    load();
-  }, []);
+  useEffect(() => { load(); }, []);
 
   const load = async () => {
     const data = await getDocs(collection(db, "lolUsers"));
     setUsers(data.docs.map(d => ({ id:d.id, ...d.data() })));
   };
 
-  /* 티어 정렬 */
   const tierRank = ["IRON","BRONZE","SILVER","GOLD","PLATINUM","EMERALD","DIAMOND","MASTER","GRANDMASTER","CHALLENGER"];
 
   const getScore = (tier) => {
     if (!tier) return 0;
     const [base, num] = tier.toUpperCase().split(" ");
     const tierIndex = tierRank.indexOf(base) * 100;
-
-    // 🔥 숫자 낮을수록 높은 티어
     const division = num ? (5 - parseInt(num)) : 0;
-
     return tierIndex + division;
   };
 
@@ -64,36 +58,24 @@ export default function Lol() {
   };
 
   const toggleMain = (l) => {
-    setMainLines(prev =>
-      prev.includes(l) ? prev.filter(x=>x!==l) : [...prev, l]
-    );
+    setMainLines(prev => prev.includes(l) ? prev.filter(x=>x!==l) : [...prev, l]);
     setSubLines(prev => prev.filter(x=>x!==l));
   };
 
   const toggleSub = (l) => {
-    setSubLines(prev =>
-      prev.includes(l) ? prev.filter(x=>x!==l) : [...prev, l]
-    );
+    setSubLines(prev => prev.includes(l) ? prev.filter(x=>x!==l) : [...prev, l]);
     setMainLines(prev => prev.filter(x=>x!==l));
   };
 
   const addUser = async () => {
     if (!name || !tier || mainLines.length === 0) return;
 
-    const newUser = {
-      name,
-      tier: tier.toUpperCase(),
-      mainLines,
-      subLines,
-    };
+    const newUser = { name, tier: tier.toUpperCase(), mainLines, subLines };
 
     const docRef = await addDoc(collection(db, "lolUsers"), newUser);
     setUsers(prev => [...prev, { id:docRef.id, ...newUser }]);
 
-    setName("");
-    setTier("");
-    setMainLines([]);
-    setSubLines([]);
+    setName(""); setTier(""); setMainLines([]); setSubLines([]);
   };
 
   const removeUser = async (id) => {
@@ -116,10 +98,9 @@ export default function Lol() {
     <div style={wrap}>
       <h1>👥 리그오브레전드 인원 리스트</h1>
 
-      {/* 등록 */}
       <div style={box}>
         <input placeholder="닉네임" value={name} onChange={e=>setName(e.target.value)} style={input}/>
-        <input placeholder="티어 (예: GOLD 3 / MASTER 300)" value={tier} onChange={e=>setTier(e.target.value)} style={input}/>
+        <input placeholder="티어" value={tier} onChange={e=>setTier(e.target.value)} style={input}/>
 
         <div style={{display:"flex", gap:10, marginTop:10}}>
           <div style={{position:"relative"}}>
@@ -129,11 +110,12 @@ export default function Lol() {
               <div style={dropdown}>
                 <b>주라인</b>
                 {lines.map(l=>(
-                  <label key={l}>
+                  <label key={l} style={checkRow}>
                     <input type="checkbox"
                       checked={mainLines.includes(l)}
                       onChange={()=>toggleMain(l)}
-                    /> {l}
+                    />
+                    <span>{l}</span>
                   </label>
                 ))}
 
@@ -141,11 +123,12 @@ export default function Lol() {
 
                 <b>부라인</b>
                 {lines.map(l=>(
-                  <label key={l}>
+                  <label key={l} style={checkRow}>
                     <input type="checkbox"
                       checked={subLines.includes(l)}
                       onChange={()=>toggleSub(l)}
-                    /> {l}
+                    />
+                    <span>{l}</span>
                   </label>
                 ))}
               </div>
@@ -156,7 +139,6 @@ export default function Lol() {
         </div>
       </div>
 
-      {/* 검색 */}
       <div style={box}>
         <input placeholder="검색" value={search} onChange={e=>setSearch(e.target.value)} style={input}/>
         <select value={sort} onChange={e=>setSort(e.target.value)} style={input}>
@@ -165,7 +147,6 @@ export default function Lol() {
         </select>
       </div>
 
-      {/* 카드 */}
       <div style={grid}>
         {filtered.map(user=>(
           <div key={user.id} style={card}>
@@ -177,32 +158,21 @@ export default function Lol() {
 
             <div style={lineBox}>
               <div style={row}>
-                <span>주라인</span>
+                <span style={labelText}>주라인</span>
                 <div style={tags}>
                   {user.mainLines.map((l,i)=><span key={i} style={mainTag}>{l}</span>)}
                 </div>
               </div>
 
               <div style={row}>
-                <span>부라인</span>
+                <span style={labelText}>부라인</span>
                 <div style={tags}>
                   {user.subLines.map((l,i)=><span key={i} style={subTag}>{l}</span>)}
                 </div>
               </div>
             </div>
 
-            <button
-              style={delBtn}
-              onClick={()=>removeUser(user.id)}
-              onMouseEnter={e=>{
-                e.target.style.transform="translateY(-2px)";
-                e.target.style.background="#dc2626";
-              }}
-              onMouseLeave={e=>{
-                e.target.style.transform="translateY(0)";
-                e.target.style.background="#ef4444";
-              }}
-            >
+            <button style={delBtn} onClick={()=>removeUser(user.id)}>
               삭제
             </button>
           </div>
@@ -228,6 +198,13 @@ const dropdown = {
   border:"1px solid #ddd",
   borderRadius:8,
   zIndex:999
+};
+
+const checkRow = {
+  display:"flex",
+  alignItems:"center",
+  gap:6,
+  marginBottom:4
 };
 
 const addBtn = {
@@ -271,6 +248,12 @@ const lineBox = {
 };
 
 const row = { display:"flex", justifyContent:"space-between", marginBottom:6 };
+
+const labelText = {
+  fontSize:12,
+  color:"#9ca3af"
+};
+
 const tags = { display:"flex", gap:6 };
 
 const mainTag = {
@@ -295,6 +278,5 @@ const delBtn = {
   padding:12,
   border:"none",
   borderRadius:12,
-  cursor:"pointer",
-  transition:"all 0.2s"
+  cursor:"pointer"
 };
