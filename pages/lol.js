@@ -32,7 +32,19 @@ export default function Lol() {
 
       <Link href="/">← 홈으로</Link>
 
-      <h1 style={{ marginTop: "20px" }}>🎮 리그오브레전드</h1>
+      <div style={{ marginTop: "20px" }}>
+  <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
+    👥 리그오브레전드 인원 리스트
+  </h1>
+
+  <p style={{
+    marginTop: "5px",
+    color: "#666",
+    fontSize: "14px"
+  }}>
+    등록된 모든 인원의 티어와 라인을 확인할 수 있습니다.
+  </p>
+</div>
 
       <div style={{
         display: "grid",
