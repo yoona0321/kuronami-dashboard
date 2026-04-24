@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 export default function Home() {
   const [openMenu, setOpenMenu] = useState(null);
 
-  // 🔥 바깥 클릭 닫기
+  // 바깥 클릭 시 닫기
   useEffect(() => {
     const handleClick = () => setOpenMenu(null);
     window.addEventListener("click", handleClick);
@@ -16,7 +16,7 @@ export default function Home() {
     setOpenMenu(openMenu === menu ? null : menu);
   };
 
-  // 카드 스타일
+  // 🎨 카드 스타일
   const cardStyle = {
     background: "white",
     padding: "25px",
@@ -36,7 +36,25 @@ export default function Home() {
     e.currentTarget.style.boxShadow = "0 8px 25px rgba(0,0,0,0.08)";
   };
 
-  // 드롭다운
+  // 🎯 메뉴 hover 스타일
+  const menuTextStyle = {
+    cursor: "pointer",
+    fontSize: "15px",
+    position: "relative",
+    paddingBottom: "4px",
+    transition: "color 0.2s ease"
+  };
+
+  const underlineStyle = {
+    position: "absolute",
+    bottom: 0,
+    left: 0,
+    height: "2px",
+    width: "0%",
+    background: "#6366f1",
+    transition: "width 0.3s ease"
+  };
+
   const dropdownStyle = {
     position: "absolute",
     top: "45px",
@@ -53,7 +71,8 @@ export default function Home() {
   const itemStyle = {
     padding: "10px",
     textDecoration: "none",
-    color: "#333"
+    color: "#333",
+    borderRadius: "8px"
   };
 
   const arrowStyle = {
@@ -62,26 +81,43 @@ export default function Home() {
     opacity: 0.6
   };
 
+  // hover 효과 함수
+  const handleMenuHover = (e) => {
+    e.currentTarget.style.color = "#6366f1";
+    e.currentTarget.querySelector(".underline").style.width = "100%";
+  };
+
+  const handleMenuLeave = (e) => {
+    e.currentTarget.style.color = "#333";
+    e.currentTarget.querySelector(".underline").style.width = "0%";
+  };
+
   return (
     <div style={{ background: "#f3f4f6", minHeight: "100vh" }}>
 
       {/* 🔥 메뉴바 */}
       <div style={{
         display: "flex",
-        gap: "20px",
+        gap: "22px",
         padding: "15px 25px",
         background: "white",
         boxShadow: "0 4px 12px rgba(0,0,0,0.05)"
       }}>
 
-        <div style={{ fontWeight: "bold" }}>
+        <div style={{ fontWeight: "bold", fontSize: "17px" }}>
           쿠로나미 🎮
         </div>
 
-        {/* 👥 */}
+        {/* 👥 소환사 관리 */}
         <div style={{ position: "relative" }}>
-          <div onClick={(e) => toggleMenu(e, "member")} style={{ cursor: "pointer" }}>
+          <div
+            onClick={(e) => toggleMenu(e, "member")}
+            style={menuTextStyle}
+            onMouseEnter={handleMenuHover}
+            onMouseLeave={handleMenuLeave}
+          >
             👥 소환사 관리 <span style={arrowStyle}>▾</span>
+            <div className="underline" style={underlineStyle}></div>
           </div>
 
           {openMenu === "member" && (
@@ -92,10 +128,16 @@ export default function Home() {
           )}
         </div>
 
-        {/* 📢 */}
+        {/* 📢 모집 */}
         <div style={{ position: "relative" }}>
-          <div onClick={(e) => toggleMenu(e, "apply")} style={{ cursor: "pointer" }}>
+          <div
+            onClick={(e) => toggleMenu(e, "apply")}
+            style={menuTextStyle}
+            onMouseEnter={handleMenuHover}
+            onMouseLeave={handleMenuLeave}
+          >
             📢 모집/참여 <span style={arrowStyle}>▾</span>
+            <div className="underline" style={underlineStyle}></div>
           </div>
 
           {openMenu === "apply" && (
@@ -105,10 +147,16 @@ export default function Home() {
           )}
         </div>
 
-        {/* 🏆 */}
+        {/* 🏆 기록실 */}
         <div style={{ position: "relative" }}>
-          <div onClick={(e) => toggleMenu(e, "record")} style={{ cursor: "pointer" }}>
+          <div
+            onClick={(e) => toggleMenu(e, "record")}
+            style={menuTextStyle}
+            onMouseEnter={handleMenuHover}
+            onMouseLeave={handleMenuLeave}
+          >
             🏆 기록실 <span style={arrowStyle}>▾</span>
+            <div className="underline" style={underlineStyle}></div>
           </div>
 
           {openMenu === "record" && (
@@ -120,12 +168,33 @@ export default function Home() {
           )}
         </div>
 
-        <Link href="/ranking">🎯 랭킹</Link>
-        <Link href="/finance">💰 장부</Link>
+        {/* 🎯 랭킹 */}
+        <Link href="/ranking" style={{ textDecoration: "none" }}>
+          <div
+            style={menuTextStyle}
+            onMouseEnter={handleMenuHover}
+            onMouseLeave={handleMenuLeave}
+          >
+            🎯 랭킹
+            <div className="underline" style={underlineStyle}></div>
+          </div>
+        </Link>
+
+        {/* 💰 장부 */}
+        <Link href="/finance" style={{ textDecoration: "none" }}>
+          <div
+            style={menuTextStyle}
+            onMouseEnter={handleMenuHover}
+            onMouseLeave={handleMenuLeave}
+          >
+            💰 장부
+            <div className="underline" style={underlineStyle}></div>
+          </div>
+        </Link>
 
       </div>
 
-      {/* 🔥 본문 (절대 안 사라짐) */}
+      {/* 🔥 본문 */}
       <div style={{ padding: "30px" }}>
         <h1 style={{ marginBottom: "25px" }}>쿠로나미 대시보드</h1>
 
