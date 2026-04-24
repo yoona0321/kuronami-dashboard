@@ -20,7 +20,6 @@ export default function Lol() {
     localStorage.setItem("lolUsers", JSON.stringify(users));
   }, [users]);
 
-  // 🎨 티어 색상
   const getTierColor = (tier) => {
     const base = tier.toUpperCase().split(" ")[0];
 
@@ -39,7 +38,6 @@ export default function Lol() {
     }
   };
 
-  // 🎯 티어 출력
   const formatTier = (tier) => {
     const parts = tier.toUpperCase().split(" ");
     const base = parts[0];
@@ -55,7 +53,6 @@ export default function Lol() {
     return base;
   };
 
-  // ⭐ 주라인
   const toggleMain = (line) => {
     if (mainLines.includes(line)) {
       setMainLines(mainLines.filter(l => l !== line));
@@ -65,7 +62,6 @@ export default function Lol() {
     }
   };
 
-  // 🔹 부라인
   const toggleSub = (line) => {
     if (subLines.includes(line)) {
       setSubLines(subLines.filter(l => l !== line));
@@ -107,7 +103,7 @@ export default function Lol() {
 
       <h1>👥 리그오브레전드 인원 리스트</h1>
       <p style={{ color: "#666", marginBottom: "25px" }}>
-        주라인과 부라인을 선택할 수 있습니다.
+        주라인 / 부라인을 선택해 등록할 수 있습니다.
       </p>
 
       {/* 입력 */}
@@ -175,41 +171,52 @@ export default function Lol() {
         {users.map((user, i) => (
           <div key={i} style={cardStyle}>
 
-            <h3>{user.name}</h3>
+            {/* 상단 */}
+            <div style={topRow}>
+              <h3 style={{ margin: 0 }}>{user.name}</h3>
+            </div>
 
-            <span style={{
-              background: getTierColor(user.tier),
-              color: "white",
-              padding: "5px 12px",
-              borderRadius: "999px",
-              fontSize: "12px",
-              fontWeight: "bold"
-            }}>
-              {formatTier(user.tier)}
-            </span>
+            {/* 티어 + 대표라인 */}
+            <div style={tierRow}>
+              <span style={{
+                background: getTierColor(user.tier),
+                color: "white",
+                padding: "6px 12px",
+                borderRadius: "999px",
+                fontSize: "12px",
+                fontWeight: "bold"
+              }}>
+                {formatTier(user.tier)}
+              </span>
 
-            {/* ⭐ + 🔹 한 줄 정렬 */}
-            <div style={{
-              marginTop: "10px",
-              display: "flex",
-              flexWrap: "wrap",
-              gap: "6px"
-            }}>
-              {user.mainLines.map((l, idx) => (
-                <span key={"m"+idx} style={{
-                  ...lineTag,
-                  background: "#6366f1",
-                  color: "white"
-                }}>
-                  {l}
+              {user.mainLines[0] && (
+                <span style={mainBadge}>
+                  {user.mainLines[0]}
                 </span>
-              ))}
+              )}
+            </div>
 
-              {user.subLines.map((l, idx) => (
-                <span key={"s"+idx} style={lineTag}>
-                  {l}
-                </span>
-              ))}
+            {/* 📦 라인 박스 */}
+            <div style={lineBox}>
+
+              <div style={rowStyle}>
+                <span style={labelStyle}>주라인</span>
+                <div style={tagWrap}>
+                  {user.mainLines.map((l, idx) => (
+                    <span key={idx} style={mainTag}>{l}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div style={rowStyle}>
+                <span style={labelStyle}>부라인</span>
+                <div style={tagWrap}>
+                  {user.subLines.map((l, idx) => (
+                    <span key={idx} style={subTag}>{l}</span>
+                  ))}
+                </div>
+              </div>
+
             </div>
 
             <button onClick={() => removeUser(i)} style={deleteBtn}>
@@ -297,10 +304,64 @@ const cardStyle = {
   boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
   display: "flex",
   flexDirection: "column",
-  gap: "8px"
+  gap: "10px"
 };
 
-const lineTag = {
+const topRow = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center"
+};
+
+const tierRow = {
+  display: "flex",
+  gap: "8px",
+  flexWrap: "wrap"
+};
+
+const mainBadge = {
+  background: "#6366f1",
+  color: "white",
+  padding: "6px 10px",
+  borderRadius: "999px",
+  fontSize: "12px"
+};
+
+const lineBox = {
+  background: "#f1f5f9",
+  borderRadius: "12px",
+  padding: "12px"
+};
+
+const rowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: "6px"
+};
+
+const labelStyle = {
+  fontSize: "12px",
+  color: "#666",
+  width: "60px"
+};
+
+const tagWrap = {
+  display: "flex",
+  gap: "6px",
+  flexWrap: "wrap",
+  justifyContent: "flex-end"
+};
+
+const mainTag = {
+  background: "#6366f1",
+  color: "white",
+  padding: "4px 10px",
+  borderRadius: "999px",
+  fontSize: "12px"
+};
+
+const subTag = {
   background: "#e5e7eb",
   padding: "4px 10px",
   borderRadius: "999px",
