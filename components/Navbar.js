@@ -107,7 +107,7 @@ export default function Navbar() {
         {openMenu === "member" && (
           <div style={dropdownStyle}>
             <Link href="/lol" style={itemStyle}>🎮 리그오브레전드</Link>
-            <Link href="/valo" style={itemStyle}>🔫 발로란트</Link>
+            <Link href="/valorant" style={itemStyle}>🔫 발로란트</Link>
           </div>
         )}
       </div>
