@@ -211,3 +211,135 @@ export default function Valorant() {
     </div>
   );
 }
+/* 스타일 */
+
+const wrap = {
+  padding: 30,
+  background: "#f3f4f6",
+  minHeight: "100vh"
+};
+
+const box = {
+  background: "white",
+  padding: 20,
+  borderRadius: 14,
+  marginBottom: 20
+};
+
+const row = {
+  display: "flex",
+  gap: 10,
+  flexWrap: "wrap"
+};
+
+const input = {
+  padding: 8,
+  border: "1px solid #ddd",
+  borderRadius: 6
+};
+
+const addBtn = {
+  padding: "10px 16px",
+  background: "#6366f1",
+  color: "white",
+  border: "none",
+  borderRadius: 10,
+  cursor: "pointer"
+};
+
+const grid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))",
+  gap: 16
+};
+
+const card = {
+  background: "white",
+  padding: 20,
+  borderRadius: 20,
+  boxShadow: "0 10px 25px rgba(0,0,0,0.08)"
+};
+
+const tierBar = {
+  color: "white",
+  padding: "8px 16px",
+  borderRadius: "999px",
+  fontSize: 13,
+  marginTop: 8,
+  display: "inline-block",
+  fontWeight: "bold"
+};
+
+const roleBox = {
+  marginTop: 12,
+  background: "#eef2f7",
+  padding: 12,
+  borderRadius: 12
+};
+
+const roleRow = {
+  display: "flex",
+  justifyContent: "space-between",
+  alignItems: "center",
+  marginBottom: 6
+};
+
+const badgeWrap = {
+  display: "flex",
+  gap: 6,
+  flexWrap: "wrap"
+};
+
+const mainBadge = {
+  background: "#6366f1",
+  color: "white",
+  padding: "4px 10px",
+  borderRadius: "999px",
+  fontSize: 12
+};
+
+const subBadge = {
+  background: "#d1d5db",
+  color: "#333",
+  padding: "4px 10px",
+  borderRadius: "999px",
+  fontSize: 12
+};
+
+const label = {
+  fontSize: 12,
+  color: "#888"
+};
+
+const delBtnBig = {
+  marginTop: 12,
+  width: "100%",
+  background: "#ef4444",
+  color: "white",
+  padding: 12,
+  border: "none",
+  borderRadius: 12,
+  cursor: "pointer",
+  fontWeight: "bold",
+  transition: "0.2s"
+};
+
+const dropdownBtn = {
+  padding: "8px",
+  border: "1px solid #ddd",
+  borderRadius: 6,
+  cursor: "pointer"
+};
+
+const dropdown = {
+  position: "absolute",
+  top: 40,
+  background: "white",
+  padding: 10,
+  border: "1px solid #ddd",
+  borderRadius: 8,
+  zIndex: 999,
+  display: "flex",
+  flexDirection: "column",
+  gap: 5
+};
