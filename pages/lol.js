@@ -1,4 +1,6 @@
 import { useState, useEffect } from "react";
+import { db } from "../firebase";
+import { collection, addDoc, getDocs, deleteDoc, doc } from "firebase/firestore";
 
 export default function Lol() {
   const [users, setUsers] = useState([]);
@@ -11,28 +13,20 @@ export default function Lol() {
 
   const lineList = ["ALL", "TOP", "JUNGLE", "MID", "ADC", "SUP"];
 
-  // ✅ 처음 로딩할 때만 불러오기 (핵심)
+  // 🔥 데이터 불러오기
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem("lolUsers");
-      if (saved) {
-        setUsers(JSON.parse(saved));
-      }
-    } catch (e) {
-      console.error("불러오기 실패", e);
-      setUsers([]);
-    }
+    const fetchData = async () => {
+      const querySnapshot = await getDocs(collection(db, "lolUsers"));
+      const data = querySnapshot.docs.map(doc => ({
+        id: doc.id,
+        ...doc.data()
+      }));
+      setUsers(data);
+    };
+    fetchData();
   }, []);
 
-  // ✅ users 바뀔 때마다 저장
-  useEffect(() => {
-    try {
-      localStorage.setItem("lolUsers", JSON.stringify(users));
-    } catch (e) {
-      console.error("저장 실패", e);
-    }
-  }, [users]);
-
+  // 🎨 티어 색상
   const getTierColor = (tier) => {
     const base = tier.toUpperCase().split(" ")[0];
 
@@ -84,7 +78,8 @@ export default function Lol() {
     }
   };
 
-  const addUser = () => {
+  // ➕ 추가
+  const addUser = async () => {
     if (!name || !tier || mainLines.length === 0) return;
 
     const newUser = {
@@ -94,7 +89,9 @@ export default function Lol() {
       subLines
     };
 
-    setUsers(prev => [...prev, newUser]); // 🔥 안전한 방식
+    const docRef = await addDoc(collection(db, "lolUsers"), newUser);
+
+    setUsers(prev => [...prev, { id: docRef.id, ...newUser }]);
 
     setName("");
     setTier("");
@@ -102,15 +99,18 @@ export default function Lol() {
     setSubLines([]);
   };
 
-  const removeUser = (i) => {
-    setUsers(users.filter((_, idx) => idx !== i));
+  // ❌ 삭제
+  const removeUser = async (id) => {
+    await deleteDoc(doc(db, "lolUsers", id));
+    setUsers(users.filter(user => user.id !== id));
   };
 
   return (
-    <div style={{ padding: "30px", background: "#f3f4f6", minHeight: "100vh" }}>
+    <div style={container}>
 
       <h1>👥 리그오브레전드 인원 리스트</h1>
 
+      {/* 입력 */}
       <div style={boxStyle}>
         <input
           placeholder="닉네임"
@@ -133,7 +133,7 @@ export default function Lol() {
 
           {open && (
             <div style={dropdownBox}>
-              <div style={{ fontWeight: "bold" }}>⭐ 주라인</div>
+              <div><b>⭐ 주라인</b></div>
               {lineList.map((l) => (
                 <label key={l} style={checkboxItem}>
                   <input
@@ -145,9 +145,9 @@ export default function Lol() {
                 </label>
               ))}
 
-              <hr style={{ margin: "10px 0" }} />
+              <hr />
 
-              <div style={{ fontWeight: "bold" }}>🔹 부라인</div>
+              <div><b>🔹 부라인</b></div>
               {lineList.map((l) => (
                 <label key={l} style={checkboxItem}>
                   <input
@@ -169,8 +169,9 @@ export default function Lol() {
 
       {/* 카드 */}
       <div style={gridStyle}>
-        {users.map((user, i) => (
-          <div key={i} style={cardStyle}>
+        {users.map((user) => (
+          <div key={user.id} style={cardStyle}>
+
             <h3>{user.name}</h3>
 
             <span style={{
@@ -178,23 +179,52 @@ export default function Lol() {
               color: "white",
               padding: "6px 12px",
               borderRadius: "999px",
-              fontSize: "12px"
+              fontSize: "12px",
+              fontWeight: "bold"
             }}>
               {formatTier(user.tier)}
             </span>
 
+            {/* 🔥 여기 핵심 (2번째 이미지 스타일) */}
             <div style={lineBox}>
-              <div>
-                <b>주라인:</b> {user.mainLines.join(", ")}
+
+              {/* 주라인 */}
+              <div style={rowStyle}>
+                <span style={labelStyle}>주라인</span>
+                <div style={tagWrap}>
+                  {user.mainLines.map((l, idx) => (
+                    <span key={idx} style={mainTag}>{l}</span>
+                  ))}
+                </div>
               </div>
-              <div>
-                <b>부라인:</b> {user.subLines.join(", ")}
+
+              {/* 부라인 */}
+              <div style={rowStyle}>
+                <span style={labelStyle}>부라인</span>
+                <div style={tagWrap}>
+                  {user.subLines.map((l, idx) => (
+                    <span key={idx} style={subTag}>{l}</span>
+                  ))}
+                </div>
               </div>
+
             </div>
 
-            <button onClick={() => removeUser(i)} style={deleteBtn}>
+            <button
+              onClick={() => removeUser(user.id)}
+              style={deleteBtn}
+              onMouseEnter={(e) => {
+                e.target.style.background = "#dc2626";
+                e.target.style.transform = "scale(1.05)";
+              }}
+              onMouseLeave={(e) => {
+                e.target.style.background = "#ef4444";
+                e.target.style.transform = "scale(1)";
+              }}
+            >
               삭제
             </button>
+
           </div>
         ))}
       </div>
@@ -203,7 +233,13 @@ export default function Lol() {
   );
 }
 
-// 스타일
+/* 스타일 */
+const container = {
+  padding: "30px",
+  background: "#f3f4f6",
+  minHeight: "100vh"
+};
+
 const boxStyle = {
   background: "white",
   padding: "20px",
@@ -232,11 +268,14 @@ const dropdownBox = {
   top: "40px",
   background: "white",
   border: "1px solid #ddd",
-  padding: "10px"
+  padding: "10px",
+  borderRadius: "8px",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.1)"
 };
 
 const checkboxItem = {
-  display: "block"
+  display: "block",
+  marginBottom: "5px"
 };
 
 const buttonStyle = {
@@ -244,32 +283,71 @@ const buttonStyle = {
   padding: "8px",
   background: "#6366f1",
   color: "white",
-  border: "none"
-};
-
-const deleteBtn = {
-  marginTop: "10px",
-  background: "#ef4444",
-  color: "white",
-  padding: "6px",
-  border: "none"
+  border: "none",
+  borderRadius: "6px"
 };
 
 const gridStyle = {
   display: "grid",
-  gridTemplateColumns: "repeat(3, 1fr)",
+  gridTemplateColumns: "repeat(2, 1fr)",
   gap: "20px"
 };
 
 const cardStyle = {
   background: "white",
   padding: "20px",
-  borderRadius: "12px"
+  borderRadius: "18px",
+  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+  display: "flex",
+  flexDirection: "column",
+  gap: "10px"
 };
 
 const lineBox = {
+  background: "#eef2f7",
+  borderRadius: "12px",
+  padding: "12px"
+};
+
+const rowStyle = {
+  display: "flex",
+  justifyContent: "space-between",
+  marginBottom: "6px"
+};
+
+const labelStyle = {
+  fontSize: "12px",
+  color: "#666"
+};
+
+const tagWrap = {
+  display: "flex",
+  gap: "6px",
+  flexWrap: "wrap"
+};
+
+const mainTag = {
+  background: "#6366f1",
+  color: "white",
+  padding: "4px 10px",
+  borderRadius: "999px",
+  fontSize: "12px"
+};
+
+const subTag = {
+  background: "#e5e7eb",
+  padding: "4px 10px",
+  borderRadius: "999px",
+  fontSize: "12px"
+};
+
+const deleteBtn = {
   marginTop: "10px",
-  background: "#f1f5f9",
-  padding: "10px",
-  borderRadius: "8px"
+  padding: "8px",
+  background: "#ef4444",
+  color: "white",
+  border: "none",
+  borderRadius: "8px",
+  cursor: "pointer",
+  transition: "all 0.2s ease"
 };
