@@ -27,7 +27,7 @@ export default function Lol() {
     if (!tier) return 0;
     const [base, num] = tier.toUpperCase().split(" ");
     const tierIndex = tierRank.indexOf(base) * 100;
-    const division = num ? (5 - parseInt(num)) : 0;
+    const division = num ? (5 - parseInt(num)) : 0; // 1이 제일 높음
     return tierIndex + division;
   };
 
@@ -98,20 +98,36 @@ export default function Lol() {
     <div style={wrap}>
       <h1>👥 리그오브레전드 인원 리스트</h1>
 
+      {/* 🔥 등록 한줄 */}
       <div style={box}>
-        <input placeholder="닉네임" value={name} onChange={e=>setName(e.target.value)} style={input}/>
-        <input placeholder="티어" value={tier} onChange={e=>setTier(e.target.value)} style={input}/>
+        <div style={registerRow}>
 
-        <div style={{display:"flex", gap:10, marginTop:10}}>
+          <input
+            placeholder="닉네임"
+            value={name}
+            onChange={e=>setName(e.target.value)}
+            style={input}
+          />
+
+          <input
+            placeholder="티어 (예: GOLD 3 / MASTER 300)"
+            value={tier}
+            onChange={e=>setTier(e.target.value)}
+            style={input}
+          />
+
           <div style={{position:"relative"}}>
-            <div style={dropdownBtn} onClick={()=>setOpen(!open)}>라인 선택 ▼</div>
+            <div style={dropdownBtn} onClick={()=>setOpen(!open)}>
+              라인 선택 ▼
+            </div>
 
             {open && (
               <div style={dropdown}>
                 <b>주라인</b>
                 {lines.map(l=>(
                   <label key={l} style={checkRow}>
-                    <input type="checkbox"
+                    <input
+                      type="checkbox"
                       checked={mainLines.includes(l)}
                       onChange={()=>toggleMain(l)}
                     />
@@ -124,7 +140,8 @@ export default function Lol() {
                 <b>부라인</b>
                 {lines.map(l=>(
                   <label key={l} style={checkRow}>
-                    <input type="checkbox"
+                    <input
+                      type="checkbox"
                       checked={subLines.includes(l)}
                       onChange={()=>toggleSub(l)}
                     />
@@ -135,10 +152,14 @@ export default function Lol() {
             )}
           </div>
 
-          <button style={addBtn} onClick={addUser}>추가</button>
+          <button style={addBtn} onClick={addUser}>
+            추가
+          </button>
+
         </div>
       </div>
 
+      {/* 🔍 검색 */}
       <div style={box}>
         <input placeholder="검색" value={search} onChange={e=>setSearch(e.target.value)} style={input}/>
         <select value={sort} onChange={e=>setSort(e.target.value)} style={input}>
@@ -147,6 +168,7 @@ export default function Lol() {
         </select>
       </div>
 
+      {/* 카드 */}
       <div style={grid}>
         {filtered.map(user=>(
           <div key={user.id} style={card}>
@@ -186,9 +208,26 @@ export default function Lol() {
 
 const wrap = { padding:30, background:"#f3f4f6" };
 const box = { background:"white", padding:20, borderRadius:14, marginBottom:20 };
-const input = { marginRight:10, padding:8, border:"1px solid #ddd", borderRadius:6 };
 
-const dropdownBtn = { padding:8, border:"1px solid #ddd", borderRadius:6, cursor:"pointer" };
+const registerRow = {
+  display:"flex",
+  alignItems:"center",
+  gap:10,
+  flexWrap:"wrap"
+};
+
+const input = {
+  padding:8,
+  border:"1px solid #ddd",
+  borderRadius:6
+};
+
+const dropdownBtn = {
+  padding:8,
+  border:"1px solid #ddd",
+  borderRadius:6,
+  cursor:"pointer"
+};
 
 const dropdown = {
   position:"absolute",
@@ -237,8 +276,7 @@ const tierTag = {
   padding:"6px 14px",
   borderRadius:"999px",
   fontSize:12,
-  fontWeight:"bold",
-  width:"fit-content"
+  fontWeight:"bold"
 };
 
 const lineBox = {
