@@ -42,7 +42,7 @@ export default function Valorant() {
 
     if (base !== "레디언트" && num) {
       const n = parseInt(num);
-      score += (4 - n) * 10;
+      score += n * 10;
     }
 
     return score;
