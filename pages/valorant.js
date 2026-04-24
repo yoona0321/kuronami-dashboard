@@ -9,8 +9,6 @@ export default function Valorant() {
   const [mainRoles, setMainRoles] = useState([]);
   const [subRoles, setSubRoles] = useState([]);
   const [open, setOpen] = useState(false);
-  const [search, setSearch] = useState("");
-  const [sort, setSort] = useState("high");
 
   const roles = ["타격대","척후대","전략가","엄호대","ALL"];
 
@@ -21,32 +19,6 @@ export default function Valorant() {
   const load = async () => {
     const data = await getDocs(collection(db, "valorantUsers"));
     setUsers(data.docs.map(d => ({ id:d.id, ...d.data() })));
-  };
-
-  const tierRank = [
-    "아이언","브론즈","실버","골드",
-    "플레티넘","다이아몬드","초월자",
-    "불멸","레디언트"
-  ];
-
-  const getScore = (tier) => {
-    if (!tier) return 0;
-
-    const parts = tier.split(" ");
-    const base = parts[0];
-    const num = parts[1];
-
-    const tierIndex = tierRank.indexOf(base);
-    let score = tierIndex * 100;
-
-    if (base !== "레디언트" && num) {
-      const n = parseInt(num);
-      if (n >= 1 && n <= 3) {
-        score += (4 - n) * 10;
-      }
-    }
-
-    return score;
   };
 
   const getColor = (tier) => {
@@ -98,16 +70,11 @@ export default function Valorant() {
     setUsers(prev => prev.filter(u=>u.id !== id));
   };
 
-  const filtered = users.sort((a,b)=>
-    sort==="high"
-      ? getScore(b.tier)-getScore(a.tier)
-      : getScore(a.tier)-getScore(b.tier)
-  );
-
   return (
     <div style={wrap}>
       <h1>🔫 발로란트 인원 리스트</h1>
 
+      {/* 입력 */}
       <div style={box}>
         <div style={row}>
           <input placeholder="닉네임" value={name} onChange={e=>setName(e.target.value)} style={input}/>
@@ -147,23 +114,45 @@ export default function Valorant() {
         </div>
       </div>
 
+      {/* 카드 */}
       <div style={grid}>
-        {filtered.map(user=>(
+        {users.map(user => (
           <div key={user.id} style={card}>
             <h3>{user.name}</h3>
 
-            <span style={{...tierTag, background:getColor(user.tier)}}>
+            {/* 티어 */}
+            <div style={{...tierBar, background:getColor(user.tier)}}>
               {user.tier}
-            </span>
-
-            <div style={roleBox}>
-              <div style={label}>주라인</div>
-              <div>{user.mainRoles?.join(", ") || "-"}</div>
-              <div style={label}>부라인</div>
-              <div>{user.subRoles?.join(", ") || "-"}</div>
             </div>
 
-            <button style={delBtn} onClick={()=>removeUser(user.id)}>
+            {/* 역할 */}
+            <div style={roleBox}>
+              <div style={roleRow}>
+                <span style={label}>주라인</span>
+                <div style={badgeWrap}>
+                  {(user.mainRoles || []).map(r => (
+                    <span key={r} style={mainBadge}>{r}</span>
+                  ))}
+                </div>
+              </div>
+
+              <div style={roleRow}>
+                <span style={label}>부라인</span>
+                <div style={badgeWrap}>
+                  {(user.subRoles || []).map(r => (
+                    <span key={r} style={subBadge}>{r}</span>
+                  ))}
+                </div>
+              </div>
+            </div>
+
+            {/* 삭제 */}
+            <button
+              style={delBtnBig}
+              onClick={()=>removeUser(user.id)}
+              onMouseEnter={(e)=> e.target.style.opacity=0.85}
+              onMouseLeave={(e)=> e.target.style.opacity=1}
+            >
               삭제
             </button>
           </div>
@@ -205,20 +194,50 @@ const card = {
   boxShadow:"0 10px 25px rgba(0,0,0,0.08)"
 };
 
-const tierTag = {
+const tierBar = {
   color:"white",
-  padding:"6px 14px",
+  padding:"8px 16px",
   borderRadius:"999px",
-  fontSize:12,
-  marginTop:5,
-  display:"inline-block"
+  fontSize:13,
+  marginTop:8,
+  display:"inline-block",
+  fontWeight:"bold"
 };
 
 const roleBox = {
-  marginTop:10,
+  marginTop:12,
   background:"#eef2f7",
-  padding:10,
-  borderRadius:10
+  padding:12,
+  borderRadius:12
+};
+
+const roleRow = {
+  display:"flex",
+  justifyContent:"space-between",
+  alignItems:"center",
+  marginBottom:6
+};
+
+const badgeWrap = {
+  display:"flex",
+  gap:6,
+  flexWrap:"wrap"
+};
+
+const mainBadge = {
+  background:"#6366f1",
+  color:"white",
+  padding:"4px 10px",
+  borderRadius:"999px",
+  fontSize:12
+};
+
+const subBadge = {
+  background:"#d1d5db",
+  color:"#333",
+  padding:"4px 10px",
+  borderRadius:"999px",
+  fontSize:12
 };
 
 const label = {
@@ -226,14 +245,17 @@ const label = {
   color:"#888"
 };
 
-const delBtn = {
-  marginTop:10,
+const delBtnBig = {
+  marginTop:12,
+  width:"100%",
   background:"#ef4444",
   color:"white",
-  padding:10,
+  padding:12,
   border:"none",
-  borderRadius:10,
-  cursor:"pointer"
+  borderRadius:12,
+  cursor:"pointer",
+  fontWeight:"bold",
+  transition:"0.2s"
 };
 
 const dropdownBtn = {
