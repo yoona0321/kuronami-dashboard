@@ -26,7 +26,8 @@ export default function Apply() {
     const newPost = {
       title,
       max,
-      participants: []
+      participants: [],
+      createdAt: new Date() // 🔥 추가
     };
 
     const docRef = await addDoc(collection(db, "applyPosts"), newPost);
@@ -58,29 +59,43 @@ export default function Apply() {
           
           <div style={cardTop}>
   
-  {/* 왼쪽: 모집중 + 제목 */}
-  <div style={{display:"flex", alignItems:"center", gap:10}}>
-    <span style={status(post)}>
-      {post.participants?.length >= post.max ? "마감됨" : "모집중"}
-    </span>
+            {/* 왼쪽 */}
+            <div style={{display:"flex", flexDirection:"column"}}>
+              
+              <div style={{display:"flex", alignItems:"center", gap:10}}>
+                <span style={status(post)}>
+                  {post.participants?.length >= post.max ? "마감됨" : "모집중"}
+                </span>
 
-    <h3 style={{margin:0}}>
-      {post.title || "제목 없음"}
-    </h3>
-  </div>
+                <h3 style={{margin:0}}>
+                  {post.title || "제목 없음"}
+                </h3>
+              </div>
 
-  {/* 오른쪽: 개최자 + 인원 */}
-  <div style={{display:"flex", alignItems:"center", gap:10}}>
-    <span style={{fontSize:13, color:"#666"}}>
-      개최자: -
-    </span>
+              {/* 🔥 날짜 추가 */}
+              <span style={{
+                fontSize:11,
+                color:"#aaa",
+                marginTop:4,
+                marginLeft:2
+              }}>
+                {formatDateTime(post.createdAt)}
+              </span>
 
-    <div style={countBox}>
-      {post.participants?.length || 0} / {post.max}
-    </div>
-  </div>
+            </div>
 
-</div>
+            {/* 오른쪽 */}
+            <div style={{display:"flex", alignItems:"center", gap:10}}>
+              <span style={{fontSize:13, color:"#666"}}>
+                개최자: -
+              </span>
+
+              <div style={countBox}>
+                {post.participants?.length || 0} / {post.max}
+              </div>
+            </div>
+
+          </div>
 
           <button
             style={enterBtn}
@@ -128,6 +143,22 @@ export default function Apply() {
     </div>
   );
 }
+
+/* 🔥 날짜 + 시간 */
+const formatDateTime = (date) => {
+  if (!date) return "";
+
+  const d = date.toDate ? date.toDate() : new Date(date);
+
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, "0");
+  const day = String(d.getDate()).padStart(2, "0");
+
+  const h = String(d.getHours()).padStart(2, "0");
+  const min = String(d.getMinutes()).padStart(2, "0");
+
+  return `${y}/${m}/${day} ${h}:${min}`;
+};
 
 /* 🎨 스타일 */
 
@@ -189,7 +220,6 @@ const cancelBtn = {
   cursor:"pointer"
 };
 
-/* 🔥 귀여운 모집중 뱃지 */
 const status = (post) => ({
   display:"inline-flex",
   alignItems:"center",
