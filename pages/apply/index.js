@@ -41,9 +41,11 @@ export default function Apply() {
   return (
     <div style={wrap}>
       
-      {/* 상단 */}
+      {/* 🔥 상단 */}
       <div style={top}>
-        <h1>📢 파티 모집</h1>
+        <h1 style={{ display:"flex", alignItems:"center", gap:8 }}>
+          📢 내전 모집 & 신청
+        </h1>
 
         <button style={createBtn} onClick={() => setModalOpen(true)}>
           + 파티 생성
@@ -54,7 +56,7 @@ export default function Apply() {
       {posts.map(post => (
         <div key={post.id} style={card}>
           
-          <div style={{display:"flex", justifyContent:"space-between"}}>
+          <div style={cardTop}>
             <span style={status(post)}>
               {post.participants?.length >= post.max ? "마감됨" : "모집중"}
             </span>
@@ -64,7 +66,7 @@ export default function Apply() {
             </div>
           </div>
 
-          <h3 style={{marginTop:10}}>
+          <h3 style={{marginTop:12}}>
             {post.title || "제목 없음"}
           </h3>
 
@@ -119,7 +121,7 @@ export default function Apply() {
   );
 }
 
-/* 스타일 */
+/* 🎨 스타일 */
 
 const wrap = {
   padding:30,
@@ -137,21 +139,28 @@ const top = {
 const card = {
   background:"white",
   padding:20,
-  borderRadius:16,
+  borderRadius:18,
   marginBottom:15,
   boxShadow:"0 6px 15px rgba(0,0,0,0.08)"
 };
 
+const cardTop = {
+  display:"flex",
+  justifyContent:"space-between",
+  alignItems:"center"
+};
+
 const enterBtn = {
-  marginTop:10,
+  marginTop:12,
   width:"100%",
-  padding:10,
+  padding:12,
   background:"#2563eb",
   color:"white",
   border:"none",
-  borderRadius:10,
+  borderRadius:12,
   cursor:"pointer",
-  fontWeight:"bold"
+  fontWeight:"bold",
+  fontSize:14
 };
 
 const createBtn = {
@@ -159,7 +168,7 @@ const createBtn = {
   color:"white",
   padding:"10px 16px",
   border:"none",
-  borderRadius:10,
+  borderRadius:12,
   cursor:"pointer",
   fontWeight:"bold"
 };
@@ -168,22 +177,32 @@ const cancelBtn = {
   background:"#e5e7eb",
   padding:"10px 16px",
   border:"none",
-  borderRadius:10,
+  borderRadius:12,
   cursor:"pointer"
 };
 
+/* 🔥 귀여운 모집중 뱃지 */
 const status = (post) => ({
-  background: post.participants?.length >= post.max ? "#ef4444" : "#22c55e",
-  color:"white",
-  padding:"4px 10px",
+  display:"inline-flex",
+  alignItems:"center",
+  justifyContent:"center",
+  height:28,
+  padding:"0 14px",
   borderRadius:999,
-  fontSize:12
+  fontSize:12,
+  fontWeight:"bold",
+  background: post.participants?.length >= post.max 
+    ? "#fee2e2"
+    : "#dcfce7",
+  color: post.participants?.length >= post.max 
+    ? "#dc2626"
+    : "#16a34a"
 });
 
 const countBox = {
   background:"#eef2ff",
-  padding:"6px 10px",
-  borderRadius:10,
+  padding:"6px 12px",
+  borderRadius:12,
   fontWeight:"bold"
 };
 
@@ -203,7 +222,7 @@ const overlay = {
 const modal = {
   background:"white",
   padding:20,
-  borderRadius:14,
+  borderRadius:16,
   width:350,
   display:"flex",
   flexDirection:"column",
@@ -212,6 +231,6 @@ const modal = {
 
 const input = {
   padding:10,
-  borderRadius:8,
+  borderRadius:10,
   border:"1px solid #ddd"
 };
