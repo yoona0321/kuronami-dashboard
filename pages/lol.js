@@ -4,20 +4,22 @@ export default function Lol() {
   const [users, setUsers] = useState([]);
   const [name, setName] = useState("");
   const [tier, setTier] = useState("");
-  const [lines, setLines] = useState([]); // 🔥 배열로 변경
+
+  const [mainLines, setMainLines] = useState([]); // ⭐ 여러개
+  const [subLines, setSubLines] = useState([]);   // 🔹 여러개
+  const [open, setOpen] = useState(false);
+
+  const lineList = ["ALL", "TOP", "JUNGLE", "MID", "ADC", "SUP"];
 
   useEffect(() => {
     const saved = localStorage.getItem("lolUsers");
-    if (saved) {
-      setUsers(JSON.parse(saved));
-    }
+    if (saved) setUsers(JSON.parse(saved));
   }, []);
 
   useEffect(() => {
     localStorage.setItem("lolUsers", JSON.stringify(users));
   }, [users]);
 
-  // 🎨 티어 색상
   const getTierColor = (tier) => {
     const base = tier.toUpperCase().split(" ")[0];
 
@@ -36,7 +38,6 @@ export default function Lol() {
     }
   };
 
-  // 티어 출력
   const formatTier = (tier) => {
     const parts = tier.toUpperCase().split(" ");
     const base = parts[0];
@@ -52,48 +53,53 @@ export default function Lol() {
     return base;
   };
 
-  // 🔥 라인 토글
-  const toggleLine = (line) => {
-    if (lines.includes(line)) {
-      setLines(lines.filter(l => l !== line));
+  // ⭐ 주라인 토글
+  const toggleMain = (line) => {
+    if (mainLines.includes(line)) {
+      setMainLines(mainLines.filter(l => l !== line));
     } else {
-      setLines([...lines, line]);
+      setMainLines([...mainLines, line]);
+      setSubLines(subLines.filter(l => l !== line)); // 겹치지 않게
+    }
+  };
+
+  // 🔹 부라인 토글
+  const toggleSub = (line) => {
+    if (subLines.includes(line)) {
+      setSubLines(subLines.filter(l => l !== line));
+    } else {
+      setSubLines([...subLines, line]);
+      setMainLines(mainLines.filter(l => l !== line)); // 겹치지 않게
     }
   };
 
   const addUser = () => {
-    if (!name || !tier || lines.length === 0) return;
+    if (!name || !tier || mainLines.length === 0) return;
 
-    const newUser = {
-      name,
-      tier: tier.toUpperCase(),
-      lines
-    };
-
-    setUsers([...users, newUser]);
+    setUsers([
+      ...users,
+      {
+        name,
+        tier: tier.toUpperCase(),
+        mainLines,
+        subLines
+      }
+    ]);
 
     setName("");
     setTier("");
-    setLines([]);
+    setMainLines([]);
+    setSubLines([]);
   };
 
-  const removeUser = (index) => {
-    setUsers(users.filter((_, i) => i !== index));
+  const removeUser = (i) => {
+    setUsers(users.filter((_, idx) => idx !== i));
   };
-
-  const lineList = ["TOP", "JUNGLE", "MID", "ADC", "SUP"];
 
   return (
-    <div style={{
-      padding: "30px",
-      background: "#f3f4f6",
-      minHeight: "100vh"
-    }}>
+    <div style={{ padding: "30px", background: "#f3f4f6", minHeight: "100vh" }}>
 
       <h1>👥 리그오브레전드 인원 리스트</h1>
-      <p style={{ color: "#666", marginBottom: "25px" }}>
-        여러 라인을 선택할 수 있습니다.
-      </p>
 
       {/* 입력 */}
       <div style={boxStyle}>
@@ -111,24 +117,43 @@ export default function Lol() {
           style={inputStyle}
         />
 
-        {/* 🔥 멀티 라인 버튼 */}
-        <div style={{ display: "flex", gap: "6px", marginTop: "10px" }}>
-          {lineList.map((l) => (
-            <button
-              key={l}
-              onClick={() => toggleLine(l)}
-              style={{
-                padding: "6px 10px",
-                borderRadius: "999px",
-                border: "none",
-                cursor: "pointer",
-                background: lines.includes(l) ? "#6366f1" : "#e5e7eb",
-                color: lines.includes(l) ? "white" : "#333"
-              }}
-            >
-              {l}
-            </button>
-          ))}
+        {/* 드롭다운 */}
+        <div style={{ position: "relative", marginTop: "10px" }}>
+          <div onClick={() => setOpen(!open)} style={dropdownButton}>
+            라인 선택 ▼
+          </div>
+
+          {open && (
+            <div style={dropdownBox}>
+
+              <div style={{ fontWeight: "bold" }}>⭐ 주라인</div>
+              {lineList.map((l) => (
+                <label key={l} style={checkboxItem}>
+                  <input
+                    type="checkbox"
+                    checked={mainLines.includes(l)}
+                    onChange={() => toggleMain(l)}
+                  />
+                  {l}
+                </label>
+              ))}
+
+              <hr style={{ margin: "10px 0" }} />
+
+              <div style={{ fontWeight: "bold" }}>🔹 부라인</div>
+              {lineList.map((l) => (
+                <label key={l} style={checkboxItem}>
+                  <input
+                    type="checkbox"
+                    checked={subLines.includes(l)}
+                    onChange={() => toggleSub(l)}
+                  />
+                  {l}
+                </label>
+              ))}
+
+            </div>
+          )}
         </div>
 
         <button onClick={addUser} style={buttonStyle}>
@@ -143,22 +168,33 @@ export default function Lol() {
 
             <h3>{user.name}</h3>
 
-            <div style={{ display: "flex", gap: "8px", marginBottom: "10px" }}>
-              <span style={{
-                background: getTierColor(user.tier),
-                color: "white",
-                padding: "5px 12px",
-                borderRadius: "999px",
-                fontSize: "12px",
-                fontWeight: "bold"
-              }}>
-                {formatTier(user.tier)}
-              </span>
+            <span style={{
+              background: getTierColor(user.tier),
+              color: "white",
+              padding: "5px 12px",
+              borderRadius: "999px",
+              fontSize: "12px",
+              fontWeight: "bold"
+            }}>
+              {formatTier(user.tier)}
+            </span>
+
+            {/* ⭐ 주라인 */}
+            <div style={{ marginTop: "10px" }}>
+              {user.mainLines.map((l, idx) => (
+                <span key={idx} style={{
+                  ...lineTag,
+                  background: "#6366f1",
+                  color: "white"
+                }}>
+                  {l}
+                </span>
+              ))}
             </div>
 
-            {/* 🔥 여러 라인 표시 */}
-            <div style={{ display: "flex", gap: "6px", flexWrap: "wrap" }}>
-              {user.lines.map((l, idx) => (
+            {/* 🔹 부라인 */}
+            <div style={{ marginTop: "5px" }}>
+              {user.subLines.map((l, idx) => (
                 <span key={idx} style={lineTag}>
                   {l}
                 </span>
@@ -192,6 +228,32 @@ const inputStyle = {
   border: "1px solid #ddd"
 };
 
+const dropdownButton = {
+  padding: "8px",
+  border: "1px solid #ddd",
+  borderRadius: "6px",
+  cursor: "pointer",
+  background: "white",
+  width: "220px"
+};
+
+const dropdownBox = {
+  position: "absolute",
+  top: "40px",
+  left: 0,
+  background: "white",
+  border: "1px solid #ddd",
+  borderRadius: "8px",
+  padding: "10px",
+  boxShadow: "0 8px 20px rgba(0,0,0,0.1)",
+  zIndex: 10
+};
+
+const checkboxItem = {
+  display: "block",
+  marginBottom: "5px"
+};
+
 const buttonStyle = {
   marginTop: "10px",
   padding: "8px 14px",
@@ -208,8 +270,7 @@ const deleteBtn = {
   background: "#ef4444",
   color: "white",
   border: "none",
-  borderRadius: "8px",
-  cursor: "pointer"
+  borderRadius: "8px"
 };
 
 const gridStyle = {
@@ -229,5 +290,6 @@ const lineTag = {
   background: "#e5e7eb",
   padding: "4px 10px",
   borderRadius: "999px",
-  fontSize: "12px"
+  fontSize: "12px",
+  marginRight: "5px"
 };
