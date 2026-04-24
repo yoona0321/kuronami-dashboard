@@ -1,87 +1,82 @@
-import Link from "next/link";
+{/* 🔥 메뉴바 */}
+<div style={{
+  display: "flex",
+  alignItems: "center",
+  gap: "30px",
+  padding: "15px 30px",
+  background: "white",
+  borderBottom: "1px solid #eee",
+  position: "sticky",
+  top: 0,
+  zIndex: 100
+}}>
 
-export default function Lol() {
+  {/* 로고 */}
+  <Link href="/" style={{ fontWeight: "bold", color: "black", textDecoration: "none" }}>
+    쿠로나미 🎮
+  </Link>
 
-  const users = [
-    { name: "carryyy #2003", tier: "MASTER", kda: 4.07, winrate: 72, line: "ADC" },
-    { name: "뚬칫냥 #KR2", tier: "MASTER", kda: 3.8, winrate: 65, line: "JUNGLE" },
-    { name: "메롱 강아지 #0526", tier: "Unranked", kda: 2.1, winrate: 55, line: "ADC" },
-  ];
+  {/* 🔽 소환사 관리 */}
+  <div style={{ position: "relative" }} className="menu">
+    <span className="menu-title">👥 소환사 관리 ▾</span>
 
-  return (
-    <div style={{ background: "#f3f4f6", minHeight: "100vh" }}>
-
-      {/* 🔥 메뉴바 */}
-      <div style={{
-        display: "flex",
-        alignItems: "center",
-        gap: "25px",
-        padding: "15px 30px",
-        background: "white",
-        borderBottom: "1px solid #eee",
-        position: "sticky",
-        top: 0,
-        zIndex: 100
-      }}>
-        <Link href="/" style={{ textDecoration: "none", color: "black", fontWeight: "bold" }}>
-          쿠로나미 🎮
-        </Link>
-
-        <Link href="/lol">👥 소환사 관리</Link>
-        <Link href="/apply">📢 모집/참여</Link>
-        <Link href="/lol-record">🏆 기록실</Link>
-        <Link href="/ranking">🎯 랭킹</Link>
-        <Link href="/finance">💰 장부</Link>
-      </div>
-
-      {/* 🔥 본문 */}
-      <div style={{ padding: "30px" }}>
-
-        {/* 제목 */}
-        <div style={{ marginTop: "20px" }}>
-          <h1 style={{ display: "flex", alignItems: "center", gap: "8px" }}>
-            👥 리그오브레전드 인원 리스트
-          </h1>
-
-          <p style={{
-            marginTop: "5px",
-            color: "#666",
-            fontSize: "14px"
-          }}>
-            등록된 모든 인원의 티어와 라인을 확인할 수 있습니다.
-          </p>
-        </div>
-
-        {/* 카드 리스트 */}
-        <div style={{
-          display: "grid",
-          gridTemplateColumns: "repeat(3, 1fr)",
-          gap: "20px",
-          marginTop: "30px"
-        }}>
-
-          {users.map((user, i) => (
-            <div key={i} style={{
-              background: "white",
-              padding: "20px",
-              borderRadius: "16px",
-              boxShadow: "0 8px 20px rgba(0,0,0,0.08)"
-            }}>
-              <h3>{user.name}</h3>
-
-              <p style={{ marginTop: "10px" }}>
-                티어: <b>{user.tier}</b>
-              </p>
-
-              <p>KDA: {user.kda}</p>
-              <p>승률: {user.winrate}%</p>
-              <p>라인: {user.line}</p>
-            </div>
-          ))}
-
-        </div>
-
-      </div>
+    <div className="dropdown">
+      <Link href="/lol">🎮 리그오브레전드</Link>
+      <Link href="/valo">🔫 발로란트</Link>
     </div>
-  );
-}
+  </div>
+
+  {/* 모집/참여 */}
+  <Link href="/apply">📢 모집/참여</Link>
+
+  {/* 🔽 기록실 */}
+  <div style={{ position: "relative" }} className="menu">
+    <span className="menu-title">🏆 기록실 ▾</span>
+
+    <div className="dropdown">
+      <Link href="/lol-record">🎮 롤 내전 기록</Link>
+      <Link href="/valo-record">🔫 발로 내전 기록</Link>
+      <Link href="/ranking-all">📊 통합 랭킹</Link>
+    </div>
+  </div>
+
+  {/* 단일 메뉴 */}
+  <Link href="/ranking">🎯 랭킹</Link>
+  <Link href="/finance">💰 장부</Link>
+
+</div>
+
+{/* 🔥 드롭다운 스타일 */}
+<style jsx>{`
+  .menu-title {
+    cursor: pointer;
+  }
+
+  .dropdown {
+    display: none;
+    position: absolute;
+    top: 30px;
+    left: 0;
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    padding: 10px;
+    min-width: 180px;
+  }
+
+  .dropdown a {
+    display: block;
+    padding: 6px 10px;
+    text-decoration: none;
+    color: black;
+  }
+
+  .dropdown a:hover {
+    background: #f3f4f6;
+    border-radius: 6px;
+  }
+
+  .menu:hover .dropdown {
+    display: block;
+  }
+`}</style>
