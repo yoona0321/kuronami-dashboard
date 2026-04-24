@@ -1,9 +1,9 @@
 export default function Home() {
   return (
     <div style={{
-      background: "#0f172a",
+      background: "#f5f7fb",
       minHeight: "100vh",
-      color: "white",
+      color: "#111",
       padding: "20px",
       fontFamily: "sans-serif"
     }}>
@@ -16,33 +16,26 @@ export default function Home() {
         {/* 왼쪽 */}
         <div style={{ flex: 1 }}>
           <h2>🔥 이번 주 TOP 3</h2>
-          <ul>
-            <li>1위 carryyy - 79킬</li>
-            <li>2위 중갈맨 - 77킬</li>
-            <li>3위 동네 - 65킬</li>
-          </ul>
+          <p style={{ color: "#777" }}>아직 데이터가 없습니다.</p>
         </div>
 
         {/* 중앙 */}
         <div style={{ flex: 2 }}>
           <h2>🏆 이번 주 MVP</h2>
           <div style={{
-            background: "#1e293b",
+            background: "white",
             padding: "20px",
-            borderRadius: "10px"
+            borderRadius: "12px",
+            boxShadow: "0 4px 12px rgba(0,0,0,0.08)"
           }}>
-            <h3>Reina #KR1</h3>
-            <p>승률 100% | KDA 4.07</p>
+            <p style={{ color: "#777" }}>아직 MVP가 선정되지 않았습니다.</p>
           </div>
         </div>
 
         {/* 오른쪽 */}
         <div style={{ flex: 1 }}>
           <h2>📜 최근 내전</h2>
-          <ul>
-            <li>2026-04-23 단판 매치</li>
-            <li>2026-04-22 단판 매치</li>
-          </ul>
+          <p style={{ color: "#777" }}>기록이 없습니다.</p>
         </div>
 
       </div>
