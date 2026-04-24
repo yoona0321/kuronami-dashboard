@@ -13,7 +13,7 @@ export default function Lol() {
 
   const lineList = ["ALL", "TOP", "JUNGLE", "MID", "ADC", "SUP"];
 
-  // 🔥 데이터 불러오기
+  // 🔥 Firestore 데이터 불러오기
   useEffect(() => {
     const fetchData = async () => {
       const querySnapshot = await getDocs(collection(db, "lolUsers"));
@@ -84,7 +84,7 @@ export default function Lol() {
   // ➕ 추가
   const addUser = async () => {
     if (!name || !tier || mainLines.length === 0) {
-      alert("닉네임 / 티어 / 주라인 최소 1개 입력해라");
+      alert("닉네임 / 티어 / 주라인 입력해라");
       return;
     }
 
@@ -139,7 +139,7 @@ export default function Lol() {
 
           {open && (
             <div style={dropdownBox}>
-              <div><b>⭐ 주라인</b></div>
+              <b>⭐ 주라인</b>
               {lineList.map((l) => (
                 <label key={l} style={checkboxItem}>
                   <input
@@ -153,7 +153,7 @@ export default function Lol() {
 
               <hr />
 
-              <div><b>🔹 부라인</b></div>
+              <b>🔹 부라인</b>
               {lineList.map((l) => (
                 <label key={l} style={checkboxItem}>
                   <input
@@ -178,20 +178,21 @@ export default function Lol() {
         {users.map((user) => (
           <div key={user.id} style={cardStyle}>
 
-            <h3>{user.name}</h3>
+            <h3 style={{ marginBottom: "6px" }}>{user.name}</h3>
 
             <span style={{
               background: getTierColor(user.tier),
               color: "white",
-              padding: "6px 12px",
+              padding: "6px 14px",
               borderRadius: "999px",
               fontSize: "12px",
-              fontWeight: "bold"
+              fontWeight: "bold",
+              width: "fit-content"
             }}>
               {formatTier(user.tier)}
             </span>
 
-            {/* 🔥 태그형 UI (중요) */}
+            {/* 📦 라인 박스 */}
             <div style={lineBox}>
 
               <div style={rowStyle}>
@@ -219,11 +220,11 @@ export default function Lol() {
               style={deleteBtn}
               onMouseEnter={(e) => {
                 e.target.style.background = "#dc2626";
-                e.target.style.transform = "scale(1.05)";
+                e.target.style.transform = "translateY(-2px)";
               }}
               onMouseLeave={(e) => {
                 e.target.style.background = "#ef4444";
-                e.target.style.transform = "scale(1)";
+                e.target.style.transform = "translateY(0)";
               }}
             >
               삭제
@@ -299,29 +300,30 @@ const gridStyle = {
 
 const cardStyle = {
   background: "white",
-  padding: "20px",
-  borderRadius: "18px",
-  boxShadow: "0 10px 25px rgba(0,0,0,0.08)",
+  padding: "22px",
+  borderRadius: "20px",
+  boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
   display: "flex",
   flexDirection: "column",
-  gap: "10px"
+  gap: "12px"
 };
 
 const lineBox = {
   background: "#eef2f7",
-  borderRadius: "12px",
-  padding: "12px"
+  borderRadius: "14px",
+  padding: "14px"
 };
 
 const rowStyle = {
   display: "flex",
   justifyContent: "space-between",
+  alignItems: "center",
   marginBottom: "6px"
 };
 
 const labelStyle = {
   fontSize: "12px",
-  color: "#666"
+  color: "#777"
 };
 
 const tagWrap = {
@@ -335,7 +337,8 @@ const mainTag = {
   color: "white",
   padding: "4px 10px",
   borderRadius: "999px",
-  fontSize: "12px"
+  fontSize: "12px",
+  fontWeight: "500"
 };
 
 const subTag = {
@@ -346,12 +349,14 @@ const subTag = {
 };
 
 const deleteBtn = {
-  marginTop: "10px",
-  padding: "8px",
+  marginTop: "6px",
+  padding: "12px",
   background: "#ef4444",
   color: "white",
   border: "none",
-  borderRadius: "8px",
+  borderRadius: "12px",
   cursor: "pointer",
+  fontWeight: "bold",
+  width: "100%",
   transition: "all 0.2s ease"
 };
