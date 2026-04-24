@@ -6,7 +6,7 @@ export default function Lol() {
   const [tier, setTier] = useState("");
   const [line, setLine] = useState("");
 
-  // 💾 불러오기 (처음 실행 시)
+  // 💾 불러오기
   useEffect(() => {
     const saved = localStorage.getItem("lolUsers");
     if (saved) {
@@ -14,10 +14,23 @@ export default function Lol() {
     }
   }, []);
 
-  // 💾 저장 (users 바뀔 때마다)
+  // 💾 저장
   useEffect(() => {
     localStorage.setItem("lolUsers", JSON.stringify(users));
   }, [users]);
+
+  // 🔥 티어 색상 함수
+  const getTierColor = (tier) => {
+    switch (tier.toUpperCase()) {
+      case "MASTER": return "#9333ea";
+      case "DIAMOND": return "#3b82f6";
+      case "PLATINUM": return "#14b8a6";
+      case "GOLD": return "#eab308";
+      case "SILVER": return "#9ca3af";
+      case "BRONZE": return "#92400e";
+      default: return "#6b7280";
+    }
+  };
 
   const addUser = () => {
     if (!name || !tier || !line) return;
@@ -42,7 +55,6 @@ export default function Lol() {
       minHeight: "100vh"
     }}>
 
-      {/* 제목 */}
       <h1 style={{ marginBottom: "10px" }}>
         👥 리그오브레전드 인원 리스트
       </h1>
@@ -68,7 +80,7 @@ export default function Lol() {
         <input
           placeholder="티어"
           value={tier}
-          onChange={(e) => setTier(e.target.value)}
+          onChange={(e) => setTier(e.target.value.toUpperCase())}
           style={inputStyle}
         />
         <input
@@ -92,8 +104,23 @@ export default function Lol() {
 
         {users.map((user, i) => (
           <div key={i} style={cardStyle}>
+
             <h3 style={{ marginBottom: "10px" }}>{user.name}</h3>
-            <p>티어: {user.tier}</p>
+
+            {/* 🔥 티어 배지 */}
+            <div style={{
+              display: "inline-block",
+              padding: "5px 10px",
+              borderRadius: "8px",
+              background: getTierColor(user.tier),
+              color: "white",
+              fontSize: "12px",
+              fontWeight: "bold",
+              marginBottom: "8px"
+            }}>
+              {user.tier}
+            </div>
+
             <p>라인: {user.line}</p>
 
             <button
@@ -102,6 +129,7 @@ export default function Lol() {
             >
               삭제
             </button>
+
           </div>
         ))}
 
@@ -111,7 +139,7 @@ export default function Lol() {
   );
 }
 
-// 스타일들
+// 🎨 스타일
 const inputStyle = {
   padding: "8px",
   marginRight: "10px",
