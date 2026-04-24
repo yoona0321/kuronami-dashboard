@@ -19,9 +19,9 @@ export default function Lol() {
 
   // 🎨 티어 색상
   const getTierColor = (tier) => {
-    const baseTier = tier.toUpperCase().split(" ")[0];
+    const base = tier.toUpperCase().split(" ")[0];
 
-    switch (baseTier) {
+    switch (base) {
       case "CHALLENGER": return "#ef4444";
       case "GRANDMASTER": return "#f97316";
       case "MASTER": return "#9333ea";
@@ -36,16 +36,20 @@ export default function Lol() {
     }
   };
 
-  // 🔥 LP 붙일지 판단
+  // 🔥 출력 포맷 (핵심)
   const formatTier = (tier) => {
-    const parts = tier.split(" ");
+    const parts = tier.toUpperCase().split(" ");
     const base = parts[0];
-    const point = parts[1];
+    const value = parts[1];
 
     const highTier = ["CHALLENGER", "GRANDMASTER", "MASTER"];
 
-    if (highTier.includes(base) && point) {
-      return `${base} ${point}LP`;
+    if (highTier.includes(base) && value) {
+      return `${base} ${value}LP`;
+    }
+
+    if (value) {
+      return `${base} ${value}`;
     }
 
     return base;
@@ -54,7 +58,12 @@ export default function Lol() {
   const addUser = () => {
     if (!name || !tier || !line) return;
 
-    const newUser = { name, tier: tier.toUpperCase(), line };
+    const newUser = {
+      name,
+      tier: tier.toUpperCase(),
+      line
+    };
+
     setUsers([...users, newUser]);
 
     setName("");
@@ -97,7 +106,7 @@ export default function Lol() {
           style={inputStyle}
         />
         <input
-          placeholder="티어 (예: MASTER 200 / GOLD)"
+          placeholder="티어 (예: GOLD 3 / MASTER 300)"
           value={tier}
           onChange={(e) => setTier(e.target.value)}
           style={inputStyle}
