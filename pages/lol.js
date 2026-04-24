@@ -6,7 +6,6 @@ export default function Lol() {
   const [tier, setTier] = useState("");
   const [line, setLine] = useState("");
 
-  // 💾 불러오기
   useEffect(() => {
     const saved = localStorage.getItem("lolUsers");
     if (saved) {
@@ -14,12 +13,11 @@ export default function Lol() {
     }
   }, []);
 
-  // 💾 저장
   useEffect(() => {
     localStorage.setItem("lolUsers", JSON.stringify(users));
   }, [users]);
 
-  // 🎨 티어 색상 (LP 포함 대응)
+  // 🎨 티어 색상
   const getTierColor = (tier) => {
     const baseTier = tier.toUpperCase().split(" ")[0];
 
@@ -28,18 +26,35 @@ export default function Lol() {
       case "GRANDMASTER": return "#f97316";
       case "MASTER": return "#9333ea";
       case "DIAMOND": return "#3b82f6";
+      case "EMERALD": return "#10b981";
       case "PLATINUM": return "#14b8a6";
       case "GOLD": return "#eab308";
       case "SILVER": return "#9ca3af";
       case "BRONZE": return "#92400e";
+      case "IRON": return "#6b7280";
       default: return "#6b7280";
     }
+  };
+
+  // 🔥 LP 붙일지 판단
+  const formatTier = (tier) => {
+    const parts = tier.split(" ");
+    const base = parts[0];
+    const point = parts[1];
+
+    const highTier = ["CHALLENGER", "GRANDMASTER", "MASTER"];
+
+    if (highTier.includes(base) && point) {
+      return `${base} ${point}LP`;
+    }
+
+    return base;
   };
 
   const addUser = () => {
     if (!name || !tier || !line) return;
 
-    const newUser = { name, tier, line };
+    const newUser = { name, tier: tier.toUpperCase(), line };
     setUsers([...users, newUser]);
 
     setName("");
@@ -67,7 +82,7 @@ export default function Lol() {
         등록된 모든 인원의 티어와 라인을 확인할 수 있습니다.
       </p>
 
-      {/* 입력창 */}
+      {/* 입력 */}
       <div style={{
         background: "white",
         padding: "20px",
@@ -82,9 +97,9 @@ export default function Lol() {
           style={inputStyle}
         />
         <input
-          placeholder="티어 (예: MASTER 200)"
+          placeholder="티어 (예: MASTER 200 / GOLD)"
           value={tier}
-          onChange={(e) => setTier(e.target.value.toUpperCase())}
+          onChange={(e) => setTier(e.target.value)}
           style={inputStyle}
         />
         <input
@@ -105,7 +120,6 @@ export default function Lol() {
         gridTemplateColumns: "repeat(3, 1fr)",
         gap: "20px"
       }}>
-
         {users.map((user, i) => (
           <div
             key={i}
@@ -120,18 +134,9 @@ export default function Lol() {
             }}
           >
 
-            {/* 닉네임 */}
-            <h3 style={{ marginBottom: "10px", fontSize: "18px" }}>
-              {user.name}
-            </h3>
+            <h3 style={{ marginBottom: "10px" }}>{user.name}</h3>
 
-            {/* 🎯 티어+LP 한 덩어리 */}
-            <div style={{
-              display: "flex",
-              gap: "8px",
-              marginBottom: "12px",
-              alignItems: "center"
-            }}>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
 
               <span style={{
                 background: getTierColor(user.tier),
@@ -141,9 +146,7 @@ export default function Lol() {
                 fontSize: "12px",
                 fontWeight: "bold"
               }}>
-                {user.tier.includes("LP")
-                  ? user.tier
-                  : `${user.tier}LP`}
+                {formatTier(user.tier)}
               </span>
 
               <span style={{
@@ -157,7 +160,6 @@ export default function Lol() {
 
             </div>
 
-            {/* 내부 박스 */}
             <div style={{
               background: "#f9fafb",
               borderRadius: "12px",
@@ -169,7 +171,6 @@ export default function Lol() {
               🚧 전적 / 승률 / 포인트 (추후 추가 예정)
             </div>
 
-            {/* 삭제 */}
             <button
               onClick={() => removeUser(i)}
               style={deleteBtn}
@@ -179,14 +180,13 @@ export default function Lol() {
 
           </div>
         ))}
-
       </div>
 
     </div>
   );
 }
 
-// 🎨 스타일
+// 스타일
 const inputStyle = {
   padding: "8px",
   marginRight: "10px",
