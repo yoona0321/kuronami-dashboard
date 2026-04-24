@@ -4,7 +4,6 @@ import { useState, useEffect } from "react";
 export default function Navbar() {
   const [openMenu, setOpenMenu] = useState(null);
 
-  // 바깥 클릭하면 메뉴 닫힘
   useEffect(() => {
     const handleClick = () => setOpenMenu(null);
     window.addEventListener("click", handleClick);
@@ -14,6 +13,12 @@ export default function Navbar() {
   const toggleMenu = (e, menu) => {
     e.stopPropagation();
     setOpenMenu(openMenu === menu ? null : menu);
+  };
+
+  // ✅ 링크 공통 스타일 (파란색 제거)
+  const linkStyle = {
+    textDecoration: "none",
+    color: "inherit"
   };
 
   const menuTextStyle = {
@@ -81,7 +86,7 @@ export default function Navbar() {
     }}>
 
       {/* 🔥 로고 (홈 이동) */}
-      <Link href="/" style={{ textDecoration: "none", color: "black" }}>
+      <Link href="/" style={linkStyle}>
         <div style={{ fontWeight: "bold", fontSize: "17px", cursor: "pointer" }}>
           쿠로나미 🎮
         </div>
@@ -148,7 +153,7 @@ export default function Navbar() {
       </div>
 
       {/* 🎯 랭킹 */}
-      <Link href="/ranking" style={{ textDecoration: "none" }}>
+      <Link href="/ranking" style={linkStyle}>
         <div
           style={menuTextStyle}
           onMouseEnter={handleMenuHover}
@@ -160,7 +165,7 @@ export default function Navbar() {
       </Link>
 
       {/* 💰 장부 */}
-      <Link href="/finance" style={{ textDecoration: "none" }}>
+      <Link href="/finance" style={linkStyle}>
         <div
           style={menuTextStyle}
           onMouseEnter={handleMenuHover}
