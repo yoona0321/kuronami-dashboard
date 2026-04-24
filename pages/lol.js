@@ -123,59 +123,62 @@ export default function Lol() {
           style={input}
         />
 
-        <div style={{ position: "relative" }}>
-          <div style={dropdownBtn} onClick={() => setOpen(!open)}>
-            라인 선택 ▼
+        {/* 🔥 라인 선택 + 추가 버튼 가로 배치 */}
+        <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: 10 }}>
+          
+          <div style={{ position: "relative" }}>
+            <div style={dropdownBtn} onClick={() => setOpen(!open)}>
+              라인 선택 ▼
+            </div>
+
+            {open && (
+              <div style={dropdown}>
+                <b>⭐ 주라인</b>
+                {lineList.map((l) => (
+                  <label key={l} style={labelItem}>
+                    <input
+                      type="checkbox"
+                      checked={mainLines.includes(l)}
+                      onChange={() => toggleMain(l)}
+                    />{" "}
+                    {l}
+                  </label>
+                ))}
+
+                <hr />
+
+                <b>🔹 부라인</b>
+                {lineList.map((l) => (
+                  <label key={l} style={labelItem}>
+                    <input
+                      type="checkbox"
+                      checked={subLines.includes(l)}
+                      onChange={() => toggleSub(l)}
+                    />{" "}
+                    {l}
+                  </label>
+                ))}
+              </div>
+            )}
           </div>
 
-          {open && (
-            <div style={dropdown}>
-              <b>⭐ 주라인</b>
-              {lineList.map((l) => (
-                <label key={l}>
-                  <input
-                    type="checkbox"
-                    checked={mainLines.includes(l)}
-                    onChange={() => toggleMain(l)}
-                  />{" "}
-                  {l}
-                </label>
-              ))}
-
-              <hr />
-
-              <b>🔹 부라인</b>
-              {lineList.map((l) => (
-                <label key={l}>
-                  <input
-                    type="checkbox"
-                    checked={subLines.includes(l)}
-                    onChange={() => toggleSub(l)}
-                  />{" "}
-                  {l}
-                </label>
-              ))}
-            </div>
-          )}
+          <button
+            onClick={addUser}
+            style={addBtn}
+            onMouseEnter={(e) => {
+              e.target.style.transform = "translateY(-2px)";
+              e.target.style.boxShadow = "0 6px 14px rgba(0,0,0,0.15)";
+              e.target.style.background = "#4f46e5";
+            }}
+            onMouseLeave={(e) => {
+              e.target.style.transform = "translateY(0)";
+              e.target.style.boxShadow = "none";
+              e.target.style.background = "#6366f1";
+            }}
+          >
+            추가
+          </button>
         </div>
-
-        {/* 🔥 추가 버튼 */}
-        <button
-          onClick={addUser}
-          style={addBtn}
-          onMouseEnter={(e) => {
-            e.target.style.transform = "translateY(-2px)";
-            e.target.style.boxShadow = "0 6px 14px rgba(0,0,0,0.15)";
-            e.target.style.background = "#4f46e5";
-          }}
-          onMouseLeave={(e) => {
-            e.target.style.transform = "translateY(0)";
-            e.target.style.boxShadow = "none";
-            e.target.style.background = "#6366f1";
-          }}
-        >
-          추가
-        </button>
       </div>
 
       <div style={grid}>
@@ -183,12 +186,7 @@ export default function Lol() {
           <div key={user.id} style={card}>
             <h3>{user.name}</h3>
 
-            <span
-              style={{
-                ...tierTag,
-                background: getTierColor(user.tier),
-              }}
-            >
+            <span style={{ ...tierTag, background: getTierColor(user.tier) }}>
               {formatTier(user.tier)}
             </span>
 
@@ -197,9 +195,7 @@ export default function Lol() {
                 <span style={label}>주라인</span>
                 <div style={tags}>
                   {user.mainLines.map((l, i) => (
-                    <span key={i} style={mainTag}>
-                      {l}
-                    </span>
+                    <span key={i} style={mainTag}>{l}</span>
                   ))}
                 </div>
               </div>
@@ -208,15 +204,12 @@ export default function Lol() {
                 <span style={label}>부라인</span>
                 <div style={tags}>
                   {user.subLines.map((l, i) => (
-                    <span key={i} style={subTag}>
-                      {l}
-                    </span>
+                    <span key={i} style={subTag}>{l}</span>
                   ))}
                 </div>
               </div>
             </div>
 
-            {/* 🔥 삭제 버튼 */}
             <button
               onClick={() => removeUser(user.id)}
               style={delBtn}
@@ -241,19 +234,10 @@ export default function Lol() {
 }
 
 /* 스타일 */
+
 const container = { padding: 30, background: "#f3f4f6", minHeight: "100vh" };
-const box = {
-  background: "white",
-  padding: 20,
-  borderRadius: 14,
-  marginBottom: 30,
-};
-const input = {
-  padding: 8,
-  marginRight: 10,
-  border: "1px solid #ddd",
-  borderRadius: 6,
-};
+const box = { background: "white", padding: 20, borderRadius: 14, marginBottom: 30 };
+const input = { padding: 8, marginRight: 10, border: "1px solid #ddd", borderRadius: 6 };
 
 const dropdownBtn = {
   padding: 8,
@@ -261,6 +245,7 @@ const dropdownBtn = {
   borderRadius: 6,
   cursor: "pointer",
   width: 200,
+  background: "white"
 };
 
 const dropdown = {
@@ -270,10 +255,17 @@ const dropdown = {
   padding: 10,
   border: "1px solid #ddd",
   borderRadius: 8,
+  zIndex: 9999,
+  boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
+};
+
+const labelItem = {
+  display: "block",
+  marginBottom: 4,
+  fontSize: 13
 };
 
 const addBtn = {
-  marginTop: 10,
   padding: "10px 16px",
   background: "#6366f1",
   color: "white",
@@ -284,11 +276,7 @@ const addBtn = {
   transition: "all 0.2s ease",
 };
 
-const grid = {
-  display: "grid",
-  gridTemplateColumns: "repeat(2,1fr)",
-  gap: 20,
-};
+const grid = { display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 20 };
 
 const card = {
   background: "white",
@@ -309,18 +297,9 @@ const tierTag = {
   width: "fit-content",
 };
 
-const lineBox = {
-  background: "#eef2f7",
-  padding: 14,
-  borderRadius: 14,
-};
+const lineBox = { background: "#eef2f7", padding: 14, borderRadius: 14 };
 
-const row = {
-  display: "flex",
-  justifyContent: "space-between",
-  marginBottom: 6,
-};
-
+const row = { display: "flex", justifyContent: "space-between", marginBottom: 6 };
 const label = { fontSize: 12, color: "#777" };
 
 const tags = { display: "flex", gap: 6, flexWrap: "wrap" };
