@@ -1,7 +1,90 @@
 import Link from "next/link";
 
 export default function Lol() {
+import Link from "next/link";
 
+{/* 🔥 메뉴바 시작 */}
+<div style={{
+  display: "flex",
+  alignItems: "center",
+  gap: "30px",
+  padding: "15px 30px",
+  background: "white",
+  borderBottom: "1px solid #eee",
+  position: "sticky",
+  top: 0,
+  zIndex: 100,
+  fontWeight: "500"
+}}>
+
+  {/* 로고 */}
+  <Link href="/" style={{ textDecoration: "none", color: "black" }}>
+    <b>쿠로나미 🎮</b>
+  </Link>
+
+  {/* 🔽 소환사 관리 */}
+  <div style={{ position: "relative" }}>
+    <span style={{ cursor: "pointer" }}>👥 소환사 관리 ▾</span>
+
+    <div style={{
+      position: "absolute",
+      top: "30px",
+      left: 0,
+      background: "white",
+      borderRadius: "10px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      padding: "10px",
+      display: "none"
+    }} className="dropdown">
+
+      <Link href="/lol" style={{ display: "block", padding: "5px 10px" }}>
+        🎮 리그오브레전드
+      </Link>
+
+      <Link href="/valo" style={{ display: "block", padding: "5px 10px" }}>
+        🔫 발로란트
+      </Link>
+
+    </div>
+  </div>
+
+  {/* 모집/참여 */}
+  <Link href="/apply">📢 모집/참여</Link>
+
+  {/* 🔽 기록실 */}
+  <div style={{ position: "relative" }}>
+    <span>🏆 기록실 ▾</span>
+
+    <div style={{
+      position: "absolute",
+      top: "30px",
+      left: 0,
+      background: "white",
+      borderRadius: "10px",
+      boxShadow: "0 4px 12px rgba(0,0,0,0.1)",
+      padding: "10px",
+      display: "none"
+    }}>
+
+      <Link href="/lol-record">🎮 롤 내전 기록</Link>
+      <Link href="/valo-record">🔫 발로 내전 기록</Link>
+      <Link href="/ranking-all">📊 통합 랭킹</Link>
+
+    </div>
+  </div>
+
+  {/* 바로 이동 메뉴 */}
+  <Link href="/ranking">🎯 랭킹</Link>
+  <Link href="/finance">💰 장부</Link>
+
+</div>
+
+{/* 🔥 드롭다운 CSS */}
+<style jsx>{`
+  div:hover > .dropdown {
+    display: block;
+  }
+`}</style>
   // 🔥 서버원 데이터 (여기만 계속 추가하면 됨)
   const users = [
     {
