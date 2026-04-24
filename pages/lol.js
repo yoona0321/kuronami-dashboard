@@ -1,10 +1,4 @@
-export default function Lol() {
-  return (
-    <div style={{ padding: "30px" }}>
-      <h1>🎮 롤 페이지</h1>
-    </div>
-  );
-}import Link from "next/link";
+import Link from "next/link";
 
 export default function Lol() {
 
