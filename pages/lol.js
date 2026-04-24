@@ -123,9 +123,7 @@ export default function Lol() {
           style={input}
         />
 
-        {/* 🔥 라인 선택 + 추가 버튼 가로 배치 */}
         <div style={{ display: "flex", alignItems: "center", gap: "10px", marginTop: 10 }}>
-          
           <div style={{ position: "relative" }}>
             <div style={dropdownBtn} onClick={() => setOpen(!open)}>
               라인 선택 ▼
@@ -259,11 +257,7 @@ const dropdown = {
   boxShadow: "0 10px 25px rgba(0,0,0,0.1)",
 };
 
-const labelItem = {
-  display: "block",
-  marginBottom: 4,
-  fontSize: 13
-};
+const labelItem = { display: "block", marginBottom: 4, fontSize: 13 };
 
 const addBtn = {
   padding: "10px 16px",
@@ -276,55 +270,59 @@ const addBtn = {
   transition: "all 0.2s ease",
 };
 
-const grid = { display: "grid", gridTemplateColumns: "repeat(2,1fr)", gap: 20 };
+const grid = {
+  display: "grid",
+  gridTemplateColumns: "repeat(auto-fill, minmax(220px, 1fr))", // 🔥 반응형 핵심
+  gap: 16,
+};
 
 const card = {
   background: "white",
-  padding: 22,
-  borderRadius: 20,
-  boxShadow: "0 12px 30px rgba(0,0,0,0.08)",
+  padding: 18,
+  borderRadius: 16,
+  boxShadow: "0 8px 20px rgba(0,0,0,0.06)",
   display: "flex",
   flexDirection: "column",
-  gap: 12,
+  gap: 10,
 };
 
 const tierTag = {
   color: "white",
-  padding: "6px 14px",
+  padding: "5px 12px",
   borderRadius: "999px",
-  fontSize: 12,
+  fontSize: 11,
   fontWeight: "bold",
   width: "fit-content",
 };
 
-const lineBox = { background: "#eef2f7", padding: 14, borderRadius: 14 };
+const lineBox = { background: "#eef2f7", padding: 10, borderRadius: 10 };
 
-const row = { display: "flex", justifyContent: "space-between", marginBottom: 6 };
-const label = { fontSize: 12, color: "#777" };
+const row = { display: "flex", justifyContent: "space-between", marginBottom: 4 };
+const label = { fontSize: 11, color: "#777" };
 
-const tags = { display: "flex", gap: 6, flexWrap: "wrap" };
+const tags = { display: "flex", gap: 4, flexWrap: "wrap" };
 
 const mainTag = {
   background: "#6366f1",
   color: "white",
-  padding: "4px 10px",
+  padding: "3px 8px",
   borderRadius: "999px",
-  fontSize: 12,
+  fontSize: 11,
 };
 
 const subTag = {
   background: "#e5e7eb",
-  padding: "4px 10px",
+  padding: "3px 8px",
   borderRadius: "999px",
-  fontSize: 12,
+  fontSize: 11,
 };
 
 const delBtn = {
-  padding: "12px",
+  padding: "10px",
   background: "#ef4444",
   color: "white",
   border: "none",
-  borderRadius: "12px",
+  borderRadius: "10px",
   fontWeight: "bold",
   width: "100%",
   cursor: "pointer",
