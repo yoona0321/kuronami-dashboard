@@ -158,9 +158,9 @@ export default function Valorant() {
 
             <div style={roleBox}>
               <div style={label}>주라인</div>
-              <div>{user.mainRoles.join(", ")}</div>
+              <div>{user.mainRoles?.join(", ") || "-"}</div>
               <div style={label}>부라인</div>
-              <div>{user.subRoles.join(", ")}</div>
+              <div>{user.subRoles?.join(", ") || "-"}</div>
             </div>
 
             <button style={delBtn} onClick={()=>removeUser(user.id)}>
