@@ -27,7 +27,7 @@ export default function Apply() {
       title,
       max,
       participants: [],
-      createdAt: new Date() // 🔥 추가
+      createdAt: new Date()
     };
 
     const docRef = await addDoc(collection(db, "applyPosts"), newPost);
@@ -42,7 +42,7 @@ export default function Apply() {
   return (
     <div style={wrap}>
       
-      {/* 🔥 상단 */}
+      {/* 상단 */}
       <div style={top}>
         <h1 style={{ display:"flex", alignItems:"center", gap:8 }}>
           📢 내전 모집 & 신청
@@ -58,41 +58,43 @@ export default function Apply() {
         <div key={post.id} style={card}>
           
           <div style={cardTop}>
-  
+
             {/* 왼쪽 */}
-            <div style={{display:"flex", flexDirection:"column"}}>
-              
+            <div style={{display:"flex", alignItems:"center", gap:10}}>
+              <span style={status(post)}>
+                {post.participants?.length >= post.max ? "마감됨" : "모집중"}
+              </span>
+
+              <h3 style={{margin:0}}>
+                {post.title || "제목 없음"}
+              </h3>
+            </div>
+
+            {/* 오른쪽 */}
+            <div style={{
+              display:"flex",
+              flexDirection:"column",
+              alignItems:"flex-end",
+              gap:4
+            }}>
               <div style={{display:"flex", alignItems:"center", gap:10}}>
-                <span style={status(post)}>
-                  {post.participants?.length >= post.max ? "마감됨" : "모집중"}
+                <span style={{fontSize:13, color:"#666"}}>
+                  개최자: -
                 </span>
 
-                <h3 style={{margin:0}}>
-                  {post.title || "제목 없음"}
-                </h3>
+                <div style={countBox}>
+                  {post.participants?.length || 0} / {post.max}
+                </div>
               </div>
 
-              {/* 🔥 날짜 추가 */}
+              {/* 🔥 날짜 위치 여기 */}
               <span style={{
                 fontSize:11,
-                color:"#aaa",
-                marginTop:4,
-                marginLeft:2
+                color:"#aaa"
               }}>
                 {formatDateTime(post.createdAt)}
               </span>
 
-            </div>
-
-            {/* 오른쪽 */}
-            <div style={{display:"flex", alignItems:"center", gap:10}}>
-              <span style={{fontSize:13, color:"#666"}}>
-                개최자: -
-              </span>
-
-              <div style={countBox}>
-                {post.participants?.length || 0} / {post.max}
-              </div>
             </div>
 
           </div>
@@ -107,7 +109,7 @@ export default function Apply() {
         </div>
       ))}
 
-      {/* 🔥 모달 */}
+      {/* 모달 */}
       {modalOpen && (
         <div style={overlay}>
           <div style={modal}>
@@ -144,7 +146,7 @@ export default function Apply() {
   );
 }
 
-/* 🔥 날짜 + 시간 */
+/* 날짜 함수 */
 const formatDateTime = (date) => {
   if (!date) return "";
 
@@ -160,7 +162,7 @@ const formatDateTime = (date) => {
   return `${y}/${m}/${day} ${h}:${min}`;
 };
 
-/* 🎨 스타일 */
+/* 스타일 */
 
 const wrap = {
   padding:30,
@@ -198,8 +200,7 @@ const enterBtn = {
   border:"none",
   borderRadius:12,
   cursor:"pointer",
-  fontWeight:"bold",
-  fontSize:14
+  fontWeight:"bold"
 };
 
 const createBtn = {
