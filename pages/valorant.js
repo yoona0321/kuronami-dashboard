@@ -13,7 +13,7 @@ export default function Valorant() {
   const [search, setSearch] = useState("");
   const [sort, setSort] = useState("high");
 
-  const roles = ["타격대","척후대","전략가","엄호대","ALL"];
+  const roles = ["타격대","척후대","전략가","감시자","ALL"];
 
   useEffect(() => {
     load();
